@@ -1,4 +1,5 @@
 # PDF RAG Embedded koodi
+  
 
 - Esimerkki Python skripti sovelluksista, joilla yritetään kerätä dataa PDF-tiedostoista, käyttämällä eri methodeja, kuten llama-cpp-python rakennettua "embedded" toimitoa.
 - Testattu myös CHUNKien optimointia.
