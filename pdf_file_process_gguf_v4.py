@@ -54,7 +54,7 @@ def chunk_text(text):
     current_word_count = 0
     print(sentences)
 
-    for sentence in sentences: 
+    for sentence in sentences:
         if not sentence.strip():
             continue
         current_chunk.append(sentence)
