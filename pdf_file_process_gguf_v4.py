@@ -10,9 +10,6 @@ from llama_cpp import Llama
 # CONFIGURATION
 # --------------------------
 
-# Folder containing PDF files
-#PDF_FOLDER = "./pdfs"
-
 # Chunk size (number of words per chunk); adjust as needed.
 CHUNK_WORD_SIZE = 300
 
