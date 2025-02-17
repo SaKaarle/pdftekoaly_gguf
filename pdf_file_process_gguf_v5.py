@@ -8,6 +8,11 @@ Tämän hetkinen configuraatio vie 6GB VRAMia.
 
 Voitaisiin lisätä mahdollisesti dynaaminen Chunkkaus ja overlappaus.
 
+Numpy versio FYI: 
+
+`pip install numpy==1.25.*`
+
+
 '''
 import os
 import glob
@@ -31,7 +36,6 @@ GGUFMALLI = f"{SIJAINTI}mistral-7b-instruct-v0.3.Q4_0.gguf"     # Main generatio
 
 # CHUNK_SIZE = 300
 # OVERLAP = 100
-
 
 # FUNKTIOT:
 
@@ -239,7 +243,7 @@ def answer_query(query, main_model, embed_model, all_embeddings):
     # Build a context prompt from the retrieved chunks.
     context = "\n---\n".join(chunk["chunk"] for chunk in relevant_chunks)
     prompt = (
-        "Answer the question based solely on the following context.\n"
+        "Answer the question based solely on the following context. List information of prof.nr. and other dimensional details.\n"
         "Context:\n"
         f"{context}\n\n"
         f"Question: {query}\n"

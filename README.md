@@ -9,7 +9,23 @@ Toistaiseksi on vain testattu yhdellä PDF tiedostolla embedding ominaisuutta ja
 
 Seuraavassa prosessissa testataan kuinka voitaisiin eka prosessoida pdfplumberilla PDF tiedostot, etsiä point-of-intrest ja myös mahdollisesti testata OpenCV:tä tai muita OCR (kuvantunnistus) sovelluksia.
   
-
+  
+## Mitä muutettavaa?
+  
+```
+# Build a context prompt from the retrieved chunks.
+context = "\n---\n".join(chunk["chunk"] for chunk in relevant_chunks)
+    prompt = (
+        "Answer the question based solely on the following context. List information of prof.nr. and other dimensional details.\n"
+        "Context:\n"
+        f"{context}\n\n"
+        f"Question: {query}\n"
+        "Answer:"
+    )```
+  
+- Muutettava promptia ja testata erillaisia promptaus kikkoja datan laadun varmistamiseen.
+  
+- Tokenien määrä on suuri jopa yhdellä PDF:llä. Dynaaminen CHUNK ja OVERLAP arvot?
 ## Mitä lisättävää?
 
 
