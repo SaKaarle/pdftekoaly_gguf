@@ -21,7 +21,8 @@ context = "\n---\n".join(chunk["chunk"] for chunk in relevant_chunks)
         f"{context}\n\n"
         f"Question: {query}\n"
         "Answer:"
-    )```
+    )
+```
   
 - Muutettava promptia ja testata erillaisia promptaus kikkoja datan laadun varmistamiseen.
   
