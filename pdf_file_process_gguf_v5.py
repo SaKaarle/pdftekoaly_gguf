@@ -24,7 +24,8 @@ from llama_cpp import Llama
 
 # KANSIOT JA SIJAINNIT:
 
-PDF_SIJAINTI = "G:/code/pdftekoaly_gguf/data/"  # Folder containing PDF files
+PDF_SIJAINTI = "G:/code/pdftekoaly_gguf/pdf_data/"  # Folder containing PDF files
+# "G:/code/pdftekoaly_gguf/data/" 
 
 SIJAINTI = "H:/tekoaly/"
 MODAL_SIJAINTI = "H:/tekoaly/Embedding/"
@@ -34,8 +35,8 @@ GGUFMALLI = f"{SIJAINTI}mistral-7b-instruct-v0.3.Q4_0.gguf"     # Main generatio
 # MUUTTUVAT:
 # esimerkiksi
 
-# CHUNK_SIZE = 300
-# OVERLAP = 100
+CHUNK_SIZE = 300
+OVERLAP = 100
 
 # FUNKTIOT:
 
@@ -55,7 +56,7 @@ def extract_text_from_pdf(pdf_path):
     return text
 
 
-def chunk_text(text, chunk_size=500, overlap=100):
+def chunk_text(text):
     """
     Improved chunking method that splits text into sentences first,
     then groups sentences into chunks that have approximately chunk_size words,
@@ -82,7 +83,7 @@ def chunk_text(text, chunk_size=500, overlap=100):
         sentence_word_count = len(sentence.split())
         # If adding this sentence would exceed our chunk size and the current chunk is not empty,
         # then finish the current chunk.
-        if current_count + sentence_word_count > chunk_size and current_chunk:
+        if current_count + sentence_word_count > CHUNK_SIZE and current_chunk:
             chunks.append(" ".join(current_chunk))
 
             # Prepare the next chunk by retaining an overlap of sentences from the current chunk.
@@ -91,7 +92,7 @@ def chunk_text(text, chunk_size=500, overlap=100):
             # Iterate backward over the current chunk to gather sentences for overlap.
             for s in reversed(current_chunk):
                 s_word_count = len(s.split())
-                if overlap_count + s_word_count <= overlap:
+                if overlap_count + s_word_count <= OVERLAP:
                     overlap_chunk.insert(0, s)  # Insert at the beginning to maintain order.
                     overlap_count += s_word_count
                 else:
@@ -175,7 +176,7 @@ def process_pdf_file(pdf_path, embed_model):
     embedding_file = os.path.splitext(pdf_path)[0] + "_embeddingsNew.json"
     try:
         with open(embedding_file, "w", encoding="utf-8") as f_emb:
-            json.dump(embedded_data, f_emb)
+            json.dump(embedded_data, f_emb, indent=4)
         print(f"[DEBUG] Saved embeddings to {embedding_file}")
     except Exception as e:
         print(f"[ERROR] Could not save embeddings to {embedding_file}: {e}")
@@ -242,18 +243,18 @@ def answer_query(query, main_model, embed_model, all_embeddings):
 
     # Build a context prompt from the retrieved chunks.
     context = "\n---\n".join(chunk["chunk"] for chunk in relevant_chunks)
+    #Answer and must provide and give information prof.nr of set dimension and top 3 results for the possible aluminium profile and it's profile number. Dimensional details and notations of aluminium profiles that is asked by the user.
     prompt = (
-        "Answer the question based solely on the following context. List information of prof.nr. and other dimensional details.\n"
+        "Answer the question based solely on the following context.\n"
         "Context:\n"
         f"{context}\n\n"
         f"Question: {query}\n"
-        "Answer:"
     )
     print("\n[DEBUG] Prompt for main model constructed:")
     print(prompt)
     try:
         # Generate answer using the main model.
-        response = main_model(prompt, max_tokens=2048)
+        response = main_model(prompt, max_tokens=4096,temperature=0.6)
         answer = response["choices"][0]["text"].strip()
     except Exception as e:
         answer = f"[ERROR] Main model generation failed: {e}"
@@ -280,8 +281,9 @@ def main():
     all_embeddings = process_all_pdfs(PDF_SIJAINTI, embed_model)
 
     # Close (or delete) the embedding model instance used for PDF processing.
-    del embed_model
-    print("[INFO] Finished embedding PDFs and released the embedding model.")
+
+    # del embed_model
+    # print("[INFO] Finished embedding PDFs and released the embedding model.")
 
     # STEP 2: Q&A using Retrieval-Augmented Generation (RAG)
     # Load the main generation model (GGUFMALLI)
@@ -294,14 +296,14 @@ def main():
         n_ctx=8192 # depends of the chunked and overlapped size and numbers.
     )
 
-    # For computing query embeddings during Q&A, reinitialize the embedding model.
-    print(f"[INFO] Reloading embedding model for query embeddings from: {MODALMALLI}")
-    query_embed_model = Llama(
-        model_path=MODALMALLI,
-        n_gpu_layers=-1,
-        verbose=True,
-        embedding=True,
-    )
+    # # For computing query embeddings during Q&A, reinitialize the embedding model.
+    # print(f"[INFO] Reloading embedding model for query embeddings from: {MODALMALLI}")
+    # query_embed_model = Llama(
+    #     model_path=MODALMALLI,
+    #     n_gpu_layers=-1,
+    #     verbose=True,
+    #     embedding=True,
+    # )
 
     # Q&A loop
     print("\n[INFO] Entering Q&A loop. Type 'exit' to quit.")
@@ -310,15 +312,15 @@ def main():
         if query.strip().lower() == "exit":
             break
         try:
-            answer = answer_query(query, main_model, query_embed_model, all_embeddings)
-            print(f"\nAnswer: {answer}")
+            answer = answer_query(query, main_model, embed_model, all_embeddings)
+            print(f"\n{answer}")
         except Exception as e:
             print(f"[ERROR] An error occurred during the Q&A process: {e}")
 
 
     # Cleanup (if needed)
     del main_model
-    del query_embed_model
+    del embed_model
     print("[INFO] Q&A session ended.")
 
 if __name__ == "__main__":
