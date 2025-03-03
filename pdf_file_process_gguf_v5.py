@@ -25,7 +25,8 @@ from llama_cpp import Llama
 # KANSIOT JA SIJAINNIT:
 
 PDF_SIJAINTI = "G:/code/pdftekoaly_gguf/pdf_data/"  # Folder containing PDF files
-# "G:/code/pdftekoaly_gguf/data/" 
+# "G:/code/pdftekoaly_gguf/data/"
+# "G:/code/pdftekoaly_gguf/pdf_data/"
 
 SIJAINTI = "H:/tekoaly/"
 MODAL_SIJAINTI = "H:/tekoaly/Embedding/"
@@ -35,8 +36,8 @@ GGUFMALLI = f"{SIJAINTI}mistral-7b-instruct-v0.3.Q4_0.gguf"     # Main generatio
 # MUUTTUVAT:
 # esimerkiksi
 
-CHUNK_SIZE = 300
-OVERLAP = 100
+CHUNK_SIZE = 600
+OVERLAP = 150
 
 # FUNKTIOT:
 
@@ -243,19 +244,50 @@ def answer_query(query, main_model, embed_model, all_embeddings):
 
     # Build a context prompt from the retrieved chunks.
     context = "\n---\n".join(chunk["chunk"] for chunk in relevant_chunks)
-    #Answer and must provide and give information prof.nr of set dimension and top 3 results for the possible aluminium profile and it's profile number. Dimensional details and notations of aluminium profiles that is asked by the user.
+    # Answer the question based solely on the following context. Answer and must provide and give information prof.nr of set dimension and top 3 results for the possible aluminium profile and it's profile number. Dimensional details and notations of aluminium profiles that is asked by the user.
+    prompt_text = "Analyze the catalog and search the tables for all rows that contain the ordered product dimensions, \
+        in any order. If you find multiple possible five digits profile numbers (prof.nr), list them all in order. \
+        Do not filter any out, unless they are completely the wrong item according to the name. \
+        Dimensions can appear in any order! (e.g., 25x40mm = 40x25mm). \
+        Do not exclude options based on value order differences. The small and big number can be exchanged. Do not favor any profile number over another - \
+        if multiple matches exist, report all of them. Do not make assumptions based on the product name - find matches using dimensions only. \
+        If no match is found, report 'Not found.' Do not make guesses. \
+        Reporting format: Ordered product | Suggested profile number(s) | Table | Page [Product name + dimensions] | [List of profile numbers]|[list of table titles]|[list of pages]|[Seokselle / For alloy]"
+    prompt_text2 = "You are helpful and smart assistant. Answer users questions based solely on the context."
     prompt = (
-        "Answer the question based solely on the following context.\n"
-        "Context:\n"
-        f"{context}\n\n"
-        f"Question: {query}\n"
+        f"{prompt_text2} Answer the question based solely on the following context. Context:{context} \n"
     )
+    print("\n\n",query)
+    #question = query
     print("\n[DEBUG] Prompt for main model constructed:")
     print(prompt)
+    system_message = {
+        "role":"system",
+        "content": f"{prompt_text2}"}
+    user_message = {
+        "role": "user",
+        "content": f"Question:{query}, context: {context}"
+    }
     try:
         # Generate answer using the main model.
-        response = main_model(prompt, max_tokens=4096,temperature=0.6)
-        answer = response["choices"][0]["text"].strip()
+        response = main_model.create_chat_completion(
+            messages=[system_message,
+                      user_message],
+                      max_tokens=1024,
+                      temperature=0.1,
+                      repeat_penalty=1,
+                      stream=False
+                        
+        )
+        # response = main_model(prompt,
+        #                       max_tokens=512,
+        #                       temperature=0.6,
+        #                       repeat_penalty=1,
+        #                       stream=False,
+        #                       )
+        #answer = response["choices"][0]["text"].strip()
+        answer = response["choices"][0]["message"]["content"].strip()
+
     except Exception as e:
         answer = f"[ERROR] Main model generation failed: {e}"
     return answer
@@ -274,7 +306,8 @@ def main():
         model_path=MODALMALLI,
         n_gpu_layers=-1,  # adjust this value for your setup
         verbose=False,
-        embedding=True # Loads Embedded model.
+        embedding=True, # Loads Embedded model.
+        n_ctx=512
     )
 
     # Process all PDFs in the designated folder.
@@ -293,7 +326,7 @@ def main():
         model_path=GGUFMALLI,
         n_gpu_layers=-1,  # adjust as needed for your setup
         verbose=False,
-        n_ctx=8192 # depends of the chunked and overlapped size and numbers.
+        n_ctx=8192 # 32768 16384 8192 4096 2048 depends of the chunked and overlapped size and numbers.
     )
 
     # # For computing query embeddings during Q&A, reinitialize the embedding model.
@@ -313,7 +346,7 @@ def main():
             break
         try:
             answer = answer_query(query, main_model, embed_model, all_embeddings)
-            print(f"\n{answer}")
+            print(f"\nAnswer:\n{answer}")
         except Exception as e:
             print(f"[ERROR] An error occurred during the Q&A process: {e}")
 
