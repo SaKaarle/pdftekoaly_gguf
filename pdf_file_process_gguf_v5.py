@@ -12,6 +12,13 @@ Numpy versio FYI:
 
 `pip install numpy==1.25.*`
 
+Terminaaliin:
+
+`conda activate tekoalyllama` tai oma virtualenv
+
+`$env:CMAKE_ARGS="-DGGML_VULKAN=on"` Windowsilla aktivoidaan Vulkan ajurien asentaminen 
+
+`pip install llama-cpp-python  --no-cache-dir --verbose` ja itse asennus Llama-cpp-pythonille.`--force` jos pitää overwritettää asennus.
 
 '''
 import os
@@ -31,8 +38,11 @@ PDF_SIJAINTI = "G:/code/pdftekoaly_gguf/pdf_data/"  # Folder containing PDF file
 SIJAINTI = "H:/tekoaly/"
 MODAL_SIJAINTI = "H:/tekoaly/Embedding/"
 MODALMALLI = f"{MODAL_SIJAINTI}all-MiniLM-L6-v2.Q4_K_M.gguf"  # Embedding model
-GGUFMALLI = f"{SIJAINTI}mistral-7b-instruct-v0.3.Q4_0.gguf"     # Main generation model
+GGUFMALLI = f"{SIJAINTI}Dolphin3.0-Llama3.2-3B-Q4_K_M.gguf"     # Main generation model
 
+# Dolphin3.0-Llama3.2-3B-Q4_K_M.gguf
+# Phi-4-mini-instruct-Q4_K_M.gguf
+# Phi-3.5-mini-instruct_Uncensored-Q4_K_M.gguf
 # MUUTTUVAT:
 # esimerkiksi
 
@@ -277,7 +287,7 @@ def answer_query(query, main_model, embed_model, all_embeddings):
                       temperature=0.1,
                       repeat_penalty=1,
                       stream=False
-                        
+
         )
         # response = main_model(prompt,
         #                       max_tokens=512,
