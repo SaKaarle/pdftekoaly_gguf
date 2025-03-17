@@ -7,7 +7,7 @@
   
 Toistaiseksi on vain testattu yhdellä PDF tiedostolla embedding ominaisuutta ja myös testattu embed mallia: `all-MiniLM-L6-v2.Q4_K_M.gguf`. Tämän jälkeen lisätää tarkempi promptaus ja "chät" interaktio käyttäjän kanssa tekstillä ja testataan eri malleja. Tässä esimerkissä on testattu Mistral 7B v0.3 ja Llama3.1 Uncensored -GGUF malleja.
   
-Testattu:
+### Testattu:
 
 llama-cpp-python versiot: 0.3.6 - 0.3.8
 nvcc versio: 12.8
@@ -20,10 +20,7 @@ Seuraavassa prosessissa testataan kuinka voitaisiin eka prosessoida pdfplumberil
   
 ## Huomioitavaa asennuksessa:
 
-  
-`pip install llama-cpp-python  --no-cache-dir --verbose` ja itse asennus Llama-cpp-pythonille.`--force` jos pitää overwritettää asennus.
-  
-Conda /miniconda/ anaconda asetuksia ja säätöjä:
+### Conda /miniconda/ anaconda asetuksia ja säätöjä:
 
 Muista PATH / Enviroment Variables...
 
@@ -33,10 +30,10 @@ PS välillä. Myös helpompi laittaa `$env: ...` komentoja ja asentaa Vulkan tai
 
 `conda config --set auto_activate_base false` ottaa pois automaattisen aktivoinnin kun avataan esim Powershell tietokoneella.
   
-Numpy version asennus: 
+### Numpy version asennus: 
 `pip install numpy==1.25.*` tai `pip install numpy==2.2.4` tai `pip install numpy`
   
-Windows Powershell terminaaliin:
+### Windows Powershell terminaaliin:
   
 Aktivoi venv `conda activate tekoalyllama` korvaamalla `tekoalyllama` omalla virtuaaliympäristöllä.
   
