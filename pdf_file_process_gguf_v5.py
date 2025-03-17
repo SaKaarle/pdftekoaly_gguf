@@ -8,19 +8,40 @@ Tämän hetkinen configuraatio vie 6GB VRAMia.
 
 Voitaisiin lisätä mahdollisesti dynaaminen Chunkkaus ja overlappaus.
 
-Numpy versio FYI: 
+Conda conffeja:
 
+Muista PATH / Enviroment Variables...
+
+Powershell: Poistamalla rajoitteita `set-executionpolicy remotesigned` että pystytään avaamaan PowerShellillä/Visual Studio Codella
+esim. `conda activate gguf` automaattisesti. Pystytään helpommin hallitsemaan VENVejä ilman, että tarvitsee vaihdella CMD ja
+PS välillä. Myös helpompi laittaa `$env: ...` komentoja ja asentaa Vulkan tai Cuda versio Llama.cpp.pythonista.
+
+`conda config --set auto_activate_base false` ottaa pois automaattisen aktivoinnin kun avataan esim Powershell tietokoneella.
+  
+Numy versio FYI: 
 `pip install numpy==1.25.*`
-
-Terminaaliin:
-
+  
+Windows Powershell terminaaliin:
+p  
 `conda activate tekoalyllama` tai oma virtualenv
+  
+AMD tai Intel tai muu GPU: `$env:CMAKE_ARGS="-DGGML_VULKAN=on"` Windowsilla aktivoidaan Vulkan ajurien asentaminen
+  
+Nvidia GPU: Asennettuna Cuda Toolkit: https://developer.nvidia.com/cuda-downloads ja sen jälkeen: `$env:CMAKE_ARGS="-DGGML_CUDA=on"`
 
-`$env:CMAKE_ARGS="-DGGML_VULKAN=on"` Windowsilla aktivoidaan Vulkan ajurien asentaminen 
-
-`pip install llama-cpp-python  --no-cache-dir --verbose` ja itse asennus Llama-cpp-pythonille.`--force` jos pitää overwritettää asennus.
+```
+PS C:\\Users\\Saku-Laptop> nvcc -V
+nvcc: NVIDIA (R) Cuda compiler driver
+Copyright (c) 2005-2025 NVIDIA Corporation
+Built on Fri_Feb_21_20:42:46_Pacific_Standard_Time_2025
+Cuda compilation tools, release 12.8, V12.8.93
+Build cuda_12.8.r12.8/compiler.35583870_0
+```
+  
+`pip install llama-cpp-python  --no-cache-dir --verbose` ja itse asennus Llama-cpp-pythonille.` --force ` jos pitää overwritettää asennus.
 
 '''
+
 import os
 import glob
 import json
@@ -31,14 +52,27 @@ from llama_cpp import Llama
 
 # KANSIOT JA SIJAINNIT:
 
-PDF_SIJAINTI = "G:/code/pdftekoaly_gguf/pdf_data/"  # Folder containing PDF files
-# "G:/code/pdftekoaly_gguf/data/"
-# "G:/code/pdftekoaly_gguf/pdf_data/"
+#Läppäri:
+# D:/RAG/
+# D:/tekoalymallit/
+PDF_SIJAINTI = "D:/RAG/"
 
-SIJAINTI = "H:/tekoaly/"
-MODAL_SIJAINTI = "H:/tekoaly/Embedding/"
+SIJAINTI = "D:/tekoalymallit/"
+MODAL_SIJAINTI = "D:/tekoalymallit/Embedding/"
 MODALMALLI = f"{MODAL_SIJAINTI}all-MiniLM-L6-v2.Q4_K_M.gguf"  # Embedding model
-GGUFMALLI = f"{SIJAINTI}Dolphin3.0-Llama3.2-3B-Q4_K_M.gguf"     # Main generation model
+GGUFMALLI = f"{SIJAINTI}gemma-3-1b-it-Q4_K_M.gguf"
+
+
+#PC:
+
+# PDF_SIJAINTI = "G:/code/pdftekoaly_gguf/pdf_data/"  # Folder containing PDF files
+# # "G:/code/pdftekoaly_gguf/data/"
+# # "G:/code/pdftekoaly_gguf/pdf_data/"
+
+# SIJAINTI = "H:/tekoaly/"
+# MODAL_SIJAINTI = "H:/tekoaly/Embedding/"
+# MODALMALLI = f"{MODAL_SIJAINTI}all-MiniLM-L6-v2.Q4_K_M.gguf"  # Embedding model
+# GGUFMALLI = f"{SIJAINTI}Dolphin3.0-Llama3.2-3B-Q4_K_M.gguf"     # Main generation model
 
 # Dolphin3.0-Llama3.2-3B-Q4_K_M.gguf
 # Phi-4-mini-instruct-Q4_K_M.gguf
