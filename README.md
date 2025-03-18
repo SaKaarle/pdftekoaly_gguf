@@ -6,8 +6,46 @@
   
   
 Toistaiseksi on vain testattu yhdellä PDF tiedostolla embedding ominaisuutta ja myös testattu embed mallia: `all-MiniLM-L6-v2.Q4_K_M.gguf`. Tämän jälkeen lisätää tarkempi promptaus ja "chät" interaktio käyttäjän kanssa tekstillä ja testataan eri malleja. Tässä esimerkissä on testattu Mistral 7B v0.3 ja Llama3.1 Uncensored -GGUF malleja.
+  
+### Testattu:
+
+llama-cpp-python versiot: 0.3.6 - 0.3.8
+nvcc versio: 12.8
+NumPy versio: 1.25.* AMD / Vulkan API
+NumPy versio: 2.2.4 NVidia
+
 
 Seuraavassa prosessissa testataan kuinka voitaisiin eka prosessoida pdfplumberilla PDF tiedostot, etsiä point-of-intrest ja myös mahdollisesti testata OpenCV:tä tai muita OCR (kuvantunnistus) sovelluksia.
+  
+  
+## Huomioitavaa asennuksessa:
+
+### Conda /miniconda/ anaconda asetuksia ja säätöjä:
+
+Muista PATH / Enviroment Variables...
+
+Powershell: Poistamalla rajoitteita `set-executionpolicy remotesigned` että pystytään avaamaan PowerShellillä/Visual Studio Codella
+esim. `conda activate gguf` automaattisesti. Pystytään helpommin hallitsemaan VENVejä ilman, että tarvitsee vaihdella CMD ja
+PS välillä. Myös helpompi laittaa `$env: ...` komentoja ja asentaa Vulkan tai Cuda versio Llama.cpp.pythonista.
+
+`conda config --set auto_activate_base false` ottaa pois automaattisen aktivoinnin kun avataan esim Powershell tietokoneella.
+  
+### Numpy version asennus: 
+`pip install numpy==1.25.*` tai `pip install numpy==2.2.4` tai `pip install numpy`
+  
+### Windows Powershell terminaaliin:
+  
+Aktivoi venv `conda activate tekoalyllama` korvaamalla `tekoalyllama` omalla virtuaaliympäristöllä.
+  
+AMD tai Intel tai muu GPU: `$env:CMAKE_ARGS="-DGGML_VULKAN=on"` Windowsilla aktivoidaan Vulkan ajurien asentaminen
+  
+Nvidia GPU: Asennettuna Cuda Toolkit: https://developer.nvidia.com/cuda-downloads ja sen jälkeen: `$env:CMAKE_ARGS="-DGGML_CUDA=on"`
+
+Seuraavaksi Llama-cpp-pythonin asennus:
+
+`pip install llama-cpp-python --no-cache-dir --verbose`
+
+Tarvittaessa käytä `--force` jos pitää overwritettää edellinen asennus.
   
   
 ## Mitä muutettavaa?
