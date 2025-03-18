@@ -18,7 +18,7 @@ Terminaaliin:
 
 `$env:CMAKE_ARGS="-DGGML_VULKAN=on"` Windowsilla aktivoidaan Vulkan ajurien asentaminen 
 
-`pip install llama-cpp-python  --no-cache-dir --verbose` ja itse asennus Llama-cpp-pythonille.`--force` jos pitää overwritettää asennus.
+`pip install llama-cpp-python==0.3.7 --no-cache-dir --verbose` ja itse asennus Llama-cpp-pythonille.`--force` jos pitää overwritettää asennus.
 
 '''
 import os
@@ -31,9 +31,10 @@ from llama_cpp import Llama
 
 # KANSIOT JA SIJAINNIT:
 
-PDF_SIJAINTI = "G:/code/pdftekoaly_gguf/pdf_data/"  # Folder containing PDF files
+PDF_SIJAINTI = "G:/code/pdftekoaly_gguf/random_pdf/"  # Folder containing PDF files
 # "G:/code/pdftekoaly_gguf/data/"
 # "G:/code/pdftekoaly_gguf/pdf_data/"
+# "G:/code/pdftekoaly_gguf/random_pdf/"
 
 SIJAINTI = "H:/tekoaly/"
 MODAL_SIJAINTI = "H:/tekoaly/Embedding/"
@@ -43,6 +44,7 @@ GGUFMALLI = f"{SIJAINTI}Dolphin3.0-Llama3.2-3B-Q4_K_M.gguf"     # Main generatio
 # Dolphin3.0-Llama3.2-3B-Q4_K_M.gguf
 # Phi-4-mini-instruct-Q4_K_M.gguf
 # Phi-3.5-mini-instruct_Uncensored-Q4_K_M.gguf
+
 # MUUTTUVAT:
 # esimerkiksi
 
@@ -51,8 +53,14 @@ OVERLAP = 150
 
 # FUNKTIOT:
 
+################### EXTRACT TEXT FROM PDF ###################
+
 def extract_text_from_pdf(pdf_path):
-    """Extract text from a PDF using pdfplumber."""
+
+    """
+    Extract text from a PDF using pdfplumber.
+    """
+
     text = ""
     try:
         with pdfplumber.open(pdf_path) as pdf:
@@ -66,8 +74,10 @@ def extract_text_from_pdf(pdf_path):
         text = ""
     return text
 
+################### CHUNK TEXT ###################
 
 def chunk_text(text):
+
     """
     Improved chunking method that splits text into sentences first,
     then groups sentences into chunks that have approximately chunk_size words,
@@ -83,6 +93,7 @@ def chunk_text(text):
     Returns:
         List[str]: A list of text chunks.
     """
+
     # Split text into sentences using a regex that looks for sentence-ending punctuation.
     sentences = re.split(r'(?<=[.!?])\s+', text.strip())
 
@@ -122,11 +133,15 @@ def chunk_text(text):
     print(f"[DEBUG] Text split into {len(chunks)} chunks using improved method.")
     return chunks
 
+################### GET EMBEDDING ###################
+
 def get_embedding(text, embed_model):
+
     """
     Get an embedding for the given text using llama-cpp-python.
     Uses the .embed() method to obtain embeddings.
     """
+
     try:
         embedding = embed_model.embed(text)
         # If the result is a dict, extract the embedding
@@ -140,17 +155,24 @@ def get_embedding(text, embed_model):
         print(f"[ERROR] Embedding failed: {e}")
         return None
 
+################### COSINE SIMILARITY ###################
+
 def cosine_similarity(vec1, vec2):
-    """Compute cosine similarity between two vectors."""
+
+    """
+    Compute cosine similarity between two vectors.
+    """
+
     v1 = np.array(vec1)
     v2 = np.array(vec2)
     if np.linalg.norm(v1) == 0 or np.linalg.norm(v2) == 0:
         return 0.0
     return float(np.dot(v1, v2) / (np.linalg.norm(v1) * np.linalg.norm(v2)))
 
-# PDF PROCESSING
+################### PDF PROCESSING ###################
 
 def process_pdf_file(pdf_path, embed_model):
+
     """
     Process a single PDF:
       - Extract text (and save to .txt for debugging)
@@ -158,10 +180,13 @@ def process_pdf_file(pdf_path, embed_model):
       - Generate an embedding for each chunk
       - Save the embeddings (with the corresponding text) to a JSON file.
     """
+
     print(f"\n[INFO] Processing PDF: {pdf_path}")
     text = extract_text_from_pdf(pdf_path)
 
     # Save raw text for debugging
+    
+    # KORJAA TÄMÄ. LISÄÄ SE ALEMMAS ETTÄ SAADAAN EMBEDDING JA TEKSTI .TXT TIEDOSTOON.
     txt_path = os.path.splitext(pdf_path)[0] + ".txt"
     try:
         with open(txt_path, "w", encoding="utf-8") as f_txt:
@@ -173,6 +198,7 @@ def process_pdf_file(pdf_path, embed_model):
     # Chunk the text
     chunks = chunk_text(text)
 
+    # POISTA " "chunk":chunk,"
     embedded_data = []
     for idx, chunk in enumerate(chunks):
         print(f"[INFO] Embedding chunk {idx + 1}/{len(chunks)}...")
@@ -193,7 +219,10 @@ def process_pdf_file(pdf_path, embed_model):
         print(f"[ERROR] Could not save embeddings to {embedding_file}: {e}")
     return embedded_data
 
+################### PROCESS ALL PDFS ###################
+
 def process_all_pdfs(pdf_folder, embed_model):
+
     """
     Process all PDF files in the specified folder.
     Returns a list of all chunk embeddings across PDFs.
@@ -208,14 +237,16 @@ def process_all_pdfs(pdf_folder, embed_model):
     print(f"[INFO] Processed all PDFs; total chunks embedded: {len(all_embeddings)}")
     return all_embeddings
 
-# RETRIEVAL CHUNKS FUNC
+################### RETRIEVAL CHUNKS FUNC ###################
 
 def retrieve_relevant_chunks(query, embed_model, all_embeddings, top_k=3):
+
     """
     Compute the query's embedding and return the top_k chunks
     from all_embeddings with the highest cosine similarity.
     Includes detailed debugging to show the similarity scores.
     """
+
     print("\n[INFO] Computing query embedding...")
     query_embedding = get_embedding(query, embed_model)
     if query_embedding is None:
@@ -243,11 +274,15 @@ def retrieve_relevant_chunks(query, embed_model, all_embeddings, top_k=3):
         print(f"  [DEBUG] Rank {rank}: score = {score:.4f} | text snippet: {snippet}...")
     return top_chunks
 
+################### ANSWER QUERY ###################
+
 def answer_query(query, main_model, embed_model, all_embeddings):
+
     """
     Retrieve the most relevant chunks and build a prompt
     for the main language model (GGUFMALLI) to answer the question.
     """
+
     relevant_chunks = retrieve_relevant_chunks(query, embed_model, all_embeddings)
     if not relevant_chunks:
         return "No relevant context found."
@@ -305,7 +340,7 @@ def answer_query(query, main_model, embed_model, all_embeddings):
 
 def main():
     '''
-    Main
+    Main code that launches
     '''
     # STEP 1: Process PDFs and create embeddings
     # Load the embedding model (all-miniLM) using llama-cpp-python.
