@@ -55,28 +55,30 @@ from llama_cpp import Llama
 #Läppäri:
 # D:/RAG/
 # D:/tekoalymallit/
-PDF_SIJAINTI = "D:/RAG/"
 
-SIJAINTI = "D:/tekoalymallit/"
-MODAL_SIJAINTI = "D:/tekoalymallit/Embedding/"
-MODALMALLI = f"{MODAL_SIJAINTI}all-MiniLM-L6-v2.Q4_K_M.gguf"  # Embedding model
-GGUFMALLI = f"{SIJAINTI}gemma-3-1b-it-Q4_K_M.gguf"
+# PDF_SIJAINTI = "D:/RAG/"
 
+# SIJAINTI = "D:/tekoalymallit/"
+# MODAL_SIJAINTI = "D:/tekoalymallit/Embedding/"
+# MODALMALLI = f"{MODAL_SIJAINTI}all-MiniLM-L6-v2.Q4_K_M.gguf"  # Embedding model
+# GGUFMALLI = f"{SIJAINTI}gemma-3-1b-it-Q4_K_M.gguf"
 
 #PC:
 
-# PDF_SIJAINTI = "G:/code/pdftekoaly_gguf/pdf_data/"  # Folder containing PDF files
-# # "G:/code/pdftekoaly_gguf/data/"
-# # "G:/code/pdftekoaly_gguf/pdf_data/"
+PDF_SIJAINTI = "G:/code/pdftekoaly_gguf/pdf_data/"  # Folder containing PDF files
+# "G:/code/pdftekoaly_gguf/data/"
+# "G:/code/pdftekoaly_gguf/pdf_data/"
 
-# SIJAINTI = "H:/tekoaly/"
-# MODAL_SIJAINTI = "H:/tekoaly/Embedding/"
-# MODALMALLI = f"{MODAL_SIJAINTI}all-MiniLM-L6-v2.Q4_K_M.gguf"  # Embedding model
-# GGUFMALLI = f"{SIJAINTI}Dolphin3.0-Llama3.2-3B-Q4_K_M.gguf"     # Main generation model
+SIJAINTI = "H:/tekoaly/"
+MODAL_SIJAINTI = "H:/tekoaly/Embedding/"
+MODALMALLI = f"{MODAL_SIJAINTI}all-MiniLM-L6-v2.Q4_K_M.gguf"  # Embedding model
+GGUFMALLI = f"{SIJAINTI}gemma3-4b-it-abliterated.Q4_K_M.gguf"     # Main generation model
 
 # Dolphin3.0-Llama3.2-3B-Q4_K_M.gguf
 # Phi-4-mini-instruct-Q4_K_M.gguf
 # Phi-3.5-mini-instruct_Uncensored-Q4_K_M.gguf
+# gemma3-4b-it-abliterated.Q4_K_M.gguf
+# gemma-3-1b-it-Q4_K_M.gguf
 
 # MUUTTUVAT:
 # esimerkiksi
@@ -333,8 +335,9 @@ def answer_query(query, main_model, embed_model, all_embeddings):
         Reporting format: Ordered product | Suggested profile number(s) | Table | Page [Product name + dimensions] | [List of profile numbers]|[list of table titles]|[list of pages]|[Seokselle / For alloy]"
     prompt_text2 = "You are helpful and smart assistant. Answer users questions based solely on the context."
     prompt = (
-        f"{prompt_text2} Answer the question based solely on the following context. Context:{context} \n"
+        f"You are helpful and smart assistant. Answer users questions based solely on the context. The context: '{context}' \n"
     )
+    # {prompt_text2} 
     print("\n\n",query)
     #question = query
     print("\n[DEBUG] Prompt for main model constructed:")
