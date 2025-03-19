@@ -180,8 +180,8 @@ def get_embedding(text, embed_model):
     try:
         embedding = embed_model.embed(text)
         # If the result is a dict, extract the embedding
-        if isinstance(embedding, dict) and "embedding" in embedding:
-            embedding = embedding["embedding"]
+        # if isinstance(embedding, dict) and "embedding" in embedding:
+        #     embedding = embedding["embedding"]
         # Convert numpy array embeddings to a list for JSON serialization
         if isinstance(embedding, np.ndarray):
             embedding = embedding.tolist()
@@ -222,33 +222,46 @@ def process_pdf_file(pdf_path, embed_model):
     # Save raw text for debugging
     
     # KORJAA TÄMÄ. LISÄÄ SE ALEMMAS ETTÄ SAADAAN EMBEDDING JA TEKSTI .TXT TIEDOSTOON.
-    txt_path = os.path.splitext(pdf_path)[0] + ".txt"
-    try:
-        with open(txt_path, "w", encoding="utf-8") as f_txt:
-            f_txt.write(text)
-        print(f"[DEBUG] Saved extracted text to {txt_path}")
-    except Exception as e:
-        print(f"[ERROR] Could not save text file {txt_path}: {e}")
 
     # Chunk the text
     chunks = chunk_text(text)
 
     # POISTA " "chunk":chunk,"
+    embedded_data_debug = []
     embedded_data = []
+    
     for idx, chunk in enumerate(chunks):
         print(f"[INFO] Embedding chunk {idx + 1}/{len(chunks)}...")
         embedding = get_embedding(chunk, embed_model)
         if embedding is not None:
             embedded_data.append({
-                "chunk": chunk,
+                "chunk":chunk,
                 "embedding": embedding
+                
             })
+        if embedding is not None:
+            embedded_data_debug.append({
+                "embedding": embedding,
+
+            })
+        else:
+            print(f"[WARNING] Embedding failed for chunk {idx + 1}/{len(chunks)}")
+
+    txt_path = os.path.splitext(pdf_path)[0] + "_new.txt"
+    try:
+        with open(txt_path, "w", encoding="utf-8") as f_txt:
+            # Convert list to string before writing to the file
+            json_data_str = json.dumps(embedded_data)
+            f_txt.write(json_data_str)  # Write JSON data directly to the file.
+            print(f"[DEBUG] Saved extracted text to {txt_path}")
+    except Exception as e:
+        print(f"[ERROR] Could not save text file {txt_path}: {e}")
 
     # Save embeddings for this PDF
     embedding_file = os.path.splitext(pdf_path)[0] + "_embeddingsNew.json"
     try:
         with open(embedding_file, "w", encoding="utf-8") as f_emb:
-            json.dump(embedded_data, f_emb, indent=4)
+            json.dump(embedded_data_debug, f_emb, indent=4)
         print(f"[DEBUG] Saved embeddings to {embedding_file}")
     except Exception as e:
         print(f"[ERROR] Could not save embeddings to {embedding_file}: {e}")
