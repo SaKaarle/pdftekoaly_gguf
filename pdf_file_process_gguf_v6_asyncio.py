@@ -42,8 +42,6 @@ Build cuda_12.8.r12.8/compiler.35583870_0
 
 '''
 
-from concurrent.futures import ThreadPoolExecutor, as_completed
-#import concurrent.futures
 import os
 import glob
 import json
@@ -53,6 +51,9 @@ import pdfplumber
 from llama_cpp import Llama
 from tqdm import tqdm
 import time
+import asyncio
+import aiofiles
+from concurrent.futures import ThreadPoolExecutor, ProcessPoolExecutor
 
 # KANSIOT JA SIJAINNIT:
 
@@ -92,24 +93,24 @@ OVERLAP = 150
 
 # FUNKTIOT:
 
-def main():
-    
+async def main():
+
     '''
     Main code that launches
-    
+
     Embedding, main model and Q&A logic.
-    
+
     1. Ladataan muistiin malli Multimodal / Embedding malli. Käy monet muut mallit.
     2. Kysytään käyttäjältä, halutaanko prosessoida EMBEDDING tiedostot?
     3. Prosessoidaan Embedding mallilla PDF tiedostojen tekstit.
     4. Q&A loop
-    
+
     '''
-    
+
     # STEP 1: Process PDFs and create embeddings
     # Load the embedding model (all-miniLM) using llama-cpp-python.
     # Adjust n_gpu_layers and other parameters as needed for your setup.
-    
+
     # EMBEDDING MALLI JA SEN SÄÄTÖ:
     print(f"[INFO] Loading embedding model from: {MODALMALLI}")
     embed_model = Llama(
@@ -130,10 +131,10 @@ def main():
             print(f"[DEBUG] First embedding: {all_embeddings[0]}")
     else:
         start_time = time.time()
-        all_embeddings = process_all_pdfs_multithreaded(PDF_SIJAINTI, embed_model)
+        all_embeddings = await process_all_pdfs_multithreaded(PDF_SIJAINTI, embed_model)
         end_time = time.time()
         print(f"[INFO] Total processing time: {end_time - start_time:.2f} seconds")
-        
+
     # STEP 2: Q&A using Retrieval-Augmented Generation (RAG)
     # Load the main generation model (GGUFMALLI)
     # JOS KONTEKSTI TAI RAG ON LIIAN SUURI, SÄÄDÄ "n_ctx" ARVOJA
@@ -159,7 +160,6 @@ def main():
         except Exception as e:
             print(f"[ERROR] An error occurred during the Q&A process: {e}")
 
-
     # Cleanup (if needed)
     del main_model
     del embed_model
@@ -167,7 +167,7 @@ def main():
 
 ################### EXTRACT TEXT FROM PDF ###################
 
-def extract_text_from_pdf(pdf_path):
+async def extract_text_from_pdf(pdf_path):
 
     """
     Extract text from a PDF using pdfplumber.
@@ -196,12 +196,12 @@ def chunk_text(text):
     while preserving sentence boundaries. It also maintains an overlap between chunks
     by including the last few sentences
     from the previous chunk until reaching the overlap word count.
-    
+
     Parameters:
         text (str): The full text to be chunked.
         chunk_size (int): Approximate target word count for each chunk.
         overlap (int): Target word count to overlap between consecutive chunks.
-        
+
     Returns:
         List[str]: A list of text chunks.
     """
@@ -283,7 +283,7 @@ def cosine_similarity(vec1, vec2):
 
 ################### PDF PROCESSING ###################
 
-def process_pdf_file(pdf_path, embed_model):
+async def process_pdf_file(pdf_path, embed_model):
 
     """
     Process a single PDF:
@@ -295,24 +295,24 @@ def process_pdf_file(pdf_path, embed_model):
     """
 
     print(f"\n[INFO] Processing PDF: {pdf_path}")
-    text = extract_text_from_pdf(pdf_path)
-    
+    text = await extract_text_from_pdf(pdf_path)
+
     # Save raw text for debugging
     txt_path = os.path.splitext(pdf_path)[0] + "_raw.txt"
     try:
-        with open(txt_path, "w", encoding="utf-8") as f_txt:
-            f_txt.write(text)
+        async with aiofiles.open(txt_path, "w", encoding="utf-8") as f_txt:
+            await f_txt.write(text)
         print(f"[DEBUG] Saved raw text to {txt_path}")
     except Exception as e:
         print(f"[ERROR] Could not save raw text to {txt_path}: {e}")
 
     # Chunk the text
     chunks = chunk_text(text)
-    
+
     # Testiä, kuinka ne erotetaan toisistaan, embedding ja chunkit. "embedded_data_debug" on txt tiedostoa varten.
     embedded_data_debug = []
     embedded_data = []
-    # "chunk":chunk, 
+    # "chunk":chunk,
     for idx, chunk in enumerate(chunks):
         print(f"[INFO] Embedding chunk {idx + 1}/{len(chunks)}...")
         embedding = get_embedding(chunk, embed_model)
@@ -328,13 +328,12 @@ def process_pdf_file(pdf_path, embed_model):
     # Save embeddings for this PDF to .npy
     embedding_file_npy = os.path.splitext(pdf_path)[0] + "_embeddings.npy"
     save_embeddings_to_npy(embedded_data, embedding_file_npy)
-    
+
     # Save embeddings to a .txt file for debugging
     embedding_file_txt = os.path.splitext(pdf_path)[0] + "_embeddings.txt"
     save_embeddings_to_txt(embedded_data, embedding_file_txt)
 
     return embedded_data
-
 
 def save_embeddings_to_npy(embeddings, file_path):
     """
@@ -360,7 +359,7 @@ def save_embeddings_to_txt(embeddings, file_path):
 
 ################### PROCESS ALL PDFS ###################
 
-def process_all_pdfs_multithreaded(pdf_folder, embed_model):
+async def process_all_pdfs_multithreaded(pdf_folder, embed_model):
     """
     Process all PDF files in the specified folder using multithreading.
     Returns a list of all chunk embeddings across PDFs.
@@ -369,38 +368,19 @@ def process_all_pdfs_multithreaded(pdf_folder, embed_model):
     print(f"[INFO] Found {len(pdf_files)} PDF file(s) in {pdf_folder}.")
     all_embeddings = []
 
-    def process_pdf(pdf):
-        return process_pdf_file(pdf, embed_model)
-
-    with ThreadPoolExecutor() as executor:
-        future_to_pdf = {executor.submit(process_pdf, pdf): pdf for pdf in pdf_files}
-        for future in tqdm(as_completed(future_to_pdf), total=len(pdf_files), desc="Processing PDFs"):
-            pdf = future_to_pdf[future]
+    loop = asyncio.get_running_loop()
+    with ThreadPoolExecutor() as thread_pool, ProcessPoolExecutor() as process_pool:
+        tasks = [
+            loop.run_in_executor(thread_pool, asyncio.run, process_pdf_file(pdf, embed_model))
+            for pdf in pdf_files
+        ]
+        for future in tqdm(asyncio.as_completed(tasks), total=len(pdf_files), desc="Processing PDFs"):
             try:
-                embeddings = future.result()
+                embeddings = await future
                 all_embeddings.extend(embeddings)
             except Exception as e:
-                print(f"[ERROR] Failed to process {pdf}: {e}")
+                print(f"[ERROR] Failed to process PDF: {e}")
 
-    print(f"[INFO] Processed all PDFs; total chunks embedded: {len(all_embeddings)}")
-    return all_embeddings
-
-### old code ###
-def process_all_pdfs(pdf_folder, embed_model):
-
-    """
-    Process all PDF files in the specified folder.
-    Returns a list of all chunk embeddings across PDFs.
-    """
-
-    pdf_files = glob.glob(os.path.join(pdf_folder, "*.pdf"))
-    print(f"[INFO] Found {len(pdf_files)} PDF file(s) in {pdf_folder}.")
-    all_embeddings = []
-    with ThreadPoolExecutor() as executor:
-        futures = [executor.submit(process_pdf_file, pdf, embed_model) for pdf in pdf_files]
-        for future in tqdm(as_completed(futures), total=len(pdf_files), desc="Processing PDFs"):
-            embeddings = future.result()
-            all_embeddings.extend(embeddings)
     print(f"[INFO] Processed all PDFs; total chunks embedded: {len(all_embeddings)}")
     return all_embeddings
 
@@ -430,8 +410,6 @@ def retrieve_relevant_chunks(query, embed_model, all_embeddings, top_k=3):
         print(f"  [DEBUG] Chunk {idx}: score = {score:.4f} | text snippet: {snippet}...")
 
     # Sort the scored list by similarity score (highest first).
-    # En ole ennemmin käyttänyt lambdaa. Pitää tarkistaa miten tämä toimii konepellin alla.
-
     scored.sort(key=lambda x: x[0], reverse=True)
     top_chunks = [item for score, item in scored[:top_k]]
 
@@ -461,7 +439,6 @@ def load_embeddings_from_npy(folder):
             print(f"[ERROR] Could not load embeddings from {npy_file}: {e}")
     return all_embeddings
 
-
 ################### ANSWER QUERY ###################
 
 def answer_query(query, main_model, embed_model, all_embeddings):
@@ -490,7 +467,7 @@ def answer_query(query, main_model, embed_model, all_embeddings):
     prompt = (
         f"You are helpful and smart assistant. Answer users questions based solely on the context. The context: '{context}' \n"
     )
-    # {prompt_text2} 
+    # {prompt_text2}
 
     #print("\n[DEBUG] Prompt for main model constructed:")
     #print(prompt)
@@ -512,7 +489,7 @@ def answer_query(query, main_model, embed_model, all_embeddings):
                       stream=False
 
         )
-        
+
         # response = main_model(prompt,
         #                       max_tokens=512,
         #                       temperature=0.6,
@@ -520,7 +497,7 @@ def answer_query(query, main_model, embed_model, all_embeddings):
         #                       stream=False,
         #                       )
         #answer = response["choices"][0]["text"].strip()
-        
+
         answer = response["choices"][0]["message"]["content"].strip()
 
     except Exception as e:
@@ -528,4 +505,4 @@ def answer_query(query, main_model, embed_model, all_embeddings):
     return answer
 
 if __name__ == "__main__":
-    main()
+    asyncio.run(main())
