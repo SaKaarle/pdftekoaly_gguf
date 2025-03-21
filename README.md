@@ -23,6 +23,7 @@ Embedding mallit:
   
 ### Testattu:
   
+- Python 3.11.11
 - llama-cpp-python versiot: 0.3.6 - 0.3.8
 - nvcc versio: 12.8
 - NumPy versio: 1.25.* AMD / Vulkan API
