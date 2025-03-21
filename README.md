@@ -49,15 +49,13 @@ PS välillä. Myös helpompi laittaa `$env: ...` komentoja ja asentaa Vulkan tai
   
 Aktivoi venv `conda activate tekoalyllama` korvaamalla `tekoalyllama` omalla virtuaaliympäristöllä.
   
-AMD tai Intel tai muu GPU: `$env:CMAKE_ARGS="-DGGML_VULKAN=on"` Windowsilla aktivoidaan Vulkan ajurien asentaminen
+AMD tai Intel tai muu GPU: `$env:CMAKE_ARGS="-DGGML_VULKAN=on"` Windowsilla aktivoidaan Vulkan ajurien asentaminen.
   
 Nvidia GPU: Asennettuna Cuda Toolkit: https://developer.nvidia.com/cuda-downloads ja sen jälkeen: `$env:CMAKE_ARGS="-DGGML_CUDA=on"`
 
-Seuraavaksi Llama-cpp-pythonin asennus:
+### Llama-cpp-pythonin asennus:
 
-`pip install llama-cpp-python --no-cache-dir --verbose`
-
-Tarvittaessa käytä `--force` jos pitää overwritettää edellinen asennus.
+`pip install llama-cpp-python --no-cache-dir --verbose` Tarvittaessa käytä `--force` jos pitää overwritettää edellinen asennus.
   
   
 ## Mitä muutettavaa?
@@ -75,8 +73,8 @@ context = "\n---\n".join(chunk["chunk"] for chunk in relevant_chunks)
 ```
   
 - Muutettava promptia ja testata erillaisia promptaus kikkoja datan laadun varmistamiseen.
-  
 - Tokenien määrä on suuri jopa yhdellä PDF:llä. Dynaaminen CHUNK ja OVERLAP arvot?
+
 ## Mitä lisättävää?
   
 ### Chatting
