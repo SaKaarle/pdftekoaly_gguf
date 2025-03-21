@@ -10,11 +10,11 @@ Toistaiseksi on vain testattu yhdellä PDF tiedostolla embedding ominaisuutta ja
 ```
 GGUF mallit:
 
-gemma3-4b-it-abliterated.Q4_K_M.gguf
-Dolphin3.0-Llama3.2-3B-Q4_K_M.gguf 
+[gemma3-4b-it-abliterated.Q4_K_M.gguf](https://huggingface.co/mlabonne/gemma-3-4b-it-abliterated-GGUF)
+[Dolphin3.0-Llama3.2-3B-Q4_K_M.gguf](https://huggingface.co/bartowski/Dolphin3.0-Llama3.2-3B-GGUF)
 
-nomic-embed-text-v1.5.Q8_0.gguf
-nomic-embed-text-v1.5.Q4_K_M.gguf
+[nomic-embed-text-v1.5.Q8_0.gguf](https://huggingface.co/nomic-ai/nomic-embed-text-v1.5-GGUF)
+[nomic-embed-text-v1.5.Q4_K_M.gguf](https://huggingface.co/nomic-ai/nomic-embed-text-v1.5-GGUF)
 ```
   
 https://huggingface.co/nomic-ai/nomic-embed-text-v1.5-GGUF
