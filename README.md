@@ -23,10 +23,10 @@ Embedding mallit:
   
 ### Testattu:
   
-llama-cpp-python versiot: 0.3.6 - 0.3.8
-nvcc versio: 12.8
-NumPy versio: 1.25.* AMD / Vulkan API
-NumPy versio: 2.2.4 NVidia / AMD toimii?
+- llama-cpp-python versiot: 0.3.6 - 0.3.8
+- nvcc versio: 12.8
+- NumPy versio: 1.25.* AMD / Vulkan API
+- NumPy versio: 2.2.4 NVidia / AMD toimii?
   
 Seuraavassa prosessissa testataan kuinka voitaisiin eka prosessoida pdfplumberilla PDF tiedostot, etsiä point-of-intrest ja myös mahdollisesti testata OpenCV:tä tai muita OCR (kuvantunnistus) sovelluksia.
   
