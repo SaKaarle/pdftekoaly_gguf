@@ -76,7 +76,7 @@ PDF_SIJAINTI = "G:/code/pdftekoaly_gguf/pdf_data/"  # Folder containing PDF file
 
 SIJAINTI = "H:/tekoaly/"
 MODAL_SIJAINTI = "H:/tekoaly/Embedding/"
-MODALMALLI = f"{MODAL_SIJAINTI}all-MiniLM-L6-v2.Q4_K_M.gguf"  # Embedding model
+MODALMALLI = f"{MODAL_SIJAINTI}nomic-embed-text-v1.5.Q8_0.gguf"  # Embedding model
 GGUFMALLI = f"{SIJAINTI}gemma3-4b-it-abliterated.Q4_K_M.gguf"     # Main generation model
 
 # Dolphin3.0-Llama3.2-3B-Q4_K_M.gguf
@@ -84,6 +84,10 @@ GGUFMALLI = f"{SIJAINTI}gemma3-4b-it-abliterated.Q4_K_M.gguf"     # Main generat
 # Phi-3.5-mini-instruct_Uncensored-Q4_K_M.gguf
 # gemma3-4b-it-abliterated.Q4_K_M.gguf
 # gemma-3-1b-it-Q4_K_M.gguf
+
+# nomic-embed-text-v1.5.Q8_0.gguf
+# nomic-embed-text-v1.5.Q4_K_M.gguf
+# all-MiniLM-L6-v2.Q4_K_M.gguf
 
 # MUUTTUVAT:
 # esimerkiksi
@@ -118,7 +122,7 @@ async def main():
         n_gpu_layers=-1,  # adjust this value for your setup
         verbose=False,
         embedding=True, # Loads Embedded model.
-        n_ctx=512
+        n_ctx=2048
     )
     # ASK the user if they want to process PDF files or use existing vector maps from JSON file:
     use_existing_npy = input("Do you want to use existing '.npy' files with embeddings? (y/n): ")
@@ -473,7 +477,7 @@ def answer_query(query, main_model, embed_model, all_embeddings):
     #print(prompt)
     system_message = {
         "role":"system",
-        "content": f"{prompt_text2}"}
+        "content": f"{prompt_text}"}
     user_message = {
         "role": "user",
         "content": f"Question:{query}, context: {context}"
