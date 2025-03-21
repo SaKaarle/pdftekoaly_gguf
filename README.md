@@ -7,6 +7,21 @@
   
 Toistaiseksi on vain testattu yhdellä PDF tiedostolla embedding ominaisuutta ja myös testattu embed mallia: `all-MiniLM-L6-v2.Q4_K_M.gguf`. Tämän jälkeen lisätää tarkempi promptaus ja "chät" interaktio käyttäjän kanssa tekstillä ja testataan eri malleja. Tässä esimerkissä on testattu Mistral 7B v0.3 ja Llama3.1 Uncensored -GGUF malleja.
   
+```
+GGUF mallit:
+
+gemma3-4b-it-abliterated.Q4_K_M.gguf
+Dolphin3.0-Llama3.2-3B-Q4_K_M.gguf 
+
+nomic-embed-text-v1.5.Q8_0.gguf
+nomic-embed-text-v1.5.Q4_K_M.gguf
+```
+  
+https://huggingface.co/nomic-ai/nomic-embed-text-v1.5-GGUF
+  
+https://huggingface.co/mlabonne/gemma-3-4b-it-abliterated-GGUF 
+https://huggingface.co/bartowski/Dolphin3.0-Llama3.2-3B-GGUF 
+    
 ### Testattu:
 
 llama-cpp-python versiot: 0.3.6 - 0.3.8
