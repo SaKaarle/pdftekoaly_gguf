@@ -54,6 +54,7 @@ import time
 import asyncio
 import aiofiles
 from concurrent.futures import ThreadPoolExecutor, ProcessPoolExecutor
+import faiss
 
 # KANSIOT JA SIJAINNIT:
 
@@ -260,10 +261,7 @@ def get_embedding(text, embed_model):
 
     try:
         embedding = embed_model.embed(text)
-        # If the result is a dict, extract the embedding
-        # if isinstance(embedding, dict) and "embedding" in embedding:
-        #     embedding = embedding["embedding"]
-        # Convert numpy array embeddings to a list for JSON serialization
+
         if isinstance(embedding, np.ndarray):
             embedding = embedding.tolist()
         return embedding
@@ -314,18 +312,13 @@ async def process_pdf_file(pdf_path, embed_model):
     chunks = chunk_text(text)
 
     # Testiä, kuinka ne erotetaan toisistaan, embedding ja chunkit. "embedded_data_debug" on txt tiedostoa varten.
-    embedded_data_debug = []
     embedded_data = []
-    # "chunk":chunk,
+    
     for idx, chunk in enumerate(chunks):
         print(f"[INFO] Embedding chunk {idx + 1}/{len(chunks)}...")
         embedding = get_embedding(chunk, embed_model)
         if embedding is not None:
             embedded_data.append({"chunk": chunk, "embedding": embedding})
-        # if embedding is not None:
-        #     embedded_data_debug.append({
-        #         "embedding": embedding
-        #     })
         else:
             print(f"[WARNING] Embedding failed for chunk {idx + 1}/{len(chunks)}")
 
@@ -339,6 +332,8 @@ async def process_pdf_file(pdf_path, embed_model):
 
     return embedded_data
 
+################### SAVE TO EMBEDDING VECTORMAP TO NPY ###################
+
 def save_embeddings_to_npy(embeddings, file_path):
     """
     Save embeddings to a .npy file.
@@ -348,6 +343,8 @@ def save_embeddings_to_npy(embeddings, file_path):
         print(f"[INFO] Saved embeddings to {file_path}")
     except Exception as e:
         print(f"[ERROR] Could not save embeddings to {file_path}: {e}")
+
+################### SAVE TO EMBEDDING VECTORMAP TO TXT ###################
 
 def save_embeddings_to_txt(embeddings, file_path):
     """
@@ -396,6 +393,8 @@ def retrieve_relevant_chunks(query, embed_model, all_embeddings, top_k=3):
     Compute the query's embedding and return the top_k chunks
     from all_embeddings with the highest cosine similarity.
     Includes detailed debugging to show the similarity scores.
+    
+    Uses FAISS and not Cosine_Similarity
     """
 
     print("\n[INFO] Computing query embedding...")
@@ -403,27 +402,57 @@ def retrieve_relevant_chunks(query, embed_model, all_embeddings, top_k=3):
     if query_embedding is None:
         return []
 
-    scored = []
-    print("[DEBUG] Comparing query embedding with stored embeddings:")
-    # Compare each stored embedding with the query embedding.
-    for idx, item in enumerate(all_embeddings):
-        score = cosine_similarity(query_embedding, item["embedding"])
-        scored.append((score, item))
-        # Show the similarity score for each chunk (showing first 100 chars of text for context)
-        snippet = item["chunk"][:100].replace("\n", " ")
-        print(f"  [DEBUG] Chunk {idx}: score = {score:.4f} | text snippet: {snippet}...")
+    # Cosine_Similarity:
+    
+    # scored = []
+    # print("[DEBUG] Comparing query embedding with stored embeddings:")
+    # # Compare each stored embedding with the query embedding.
+    # for idx, item in enumerate(all_embeddings):
+    #     score = cosine_similarity(query_embedding, item["embedding"])
+    #     scored.append((score, item))
+    #     # Show the similarity score for each chunk (showing first 100 chars of text for context)
+    #     snippet = item["chunk"][:100].replace("\n", " ")
+    #     print(f"  [DEBUG] Chunk {idx}: score = {score:.4f} | text snippet: {snippet}...")
 
-    # Sort the scored list by similarity score (highest first).
-    scored.sort(key=lambda x: x[0], reverse=True)
-    top_chunks = [item for score, item in scored[:top_k]]
+    # # Sort the scored list by similarity score (highest first).
+    # scored.sort(key=lambda x: x[0], reverse=True)
+    # top_chunks = [item for score, item in scored[:top_k]]
+
+    # print(f"[DEBUG] Selected top {top_k} chunks:")
+    # for rank, (score, item) in enumerate(scored[:top_k], start=1):
+    #     snippet = item["chunk"][:100].replace("\n", " ")
+    #     print(f"  [DEBUG] Rank {rank}: score = {score:.4f} | text snippet: {snippet}...")
+    # return top_chunks
+
+    # FAISS index
+    
+    # Normalize the query embedding
+    query_embedding = np.array(query_embedding).astype('float32')
+    query_embedding /= np.linalg.norm(query_embedding)
+
+    # FAISS index
+    dimension = len(query_embedding)
+    index = faiss.IndexFlatIP(dimension)  # Use Inner Product for cosine similarity
+
+    embeddings = np.array([item["embedding"] for item in all_embeddings]).astype('float32')
+
+    # Normalize the embeddings before indexing
+    faiss.normalize_L2(embeddings)
+
+    index.add(embeddings)
+    
+    # Search for the top_k most similar embeddings
+    distances, indices = index.search(np.array([query_embedding]), top_k)
+    top_chunks = [all_embeddings[idx] for idx in indices[0]]
 
     print(f"[DEBUG] Selected top {top_k} chunks:")
-    for rank, (score, item) in enumerate(scored[:top_k], start=1):
+    for rank, (distance, item) in enumerate(zip(distances[0], top_chunks), start=1):
         snippet = item["chunk"][:100].replace("\n", " ")
-        print(f"  [DEBUG] Rank {rank}: score = {score:.4f} | text snippet: {snippet}...")
+        print(f"  [DEBUG] Rank {rank}: distance = {distance:.4f}, text snippet: {snippet}...")
+
     return top_chunks
 
-################### JSON FILE USAGE ###################
+################### NPY FILE USAGE ###################
 
 def load_embeddings_from_npy(folder):
     """
@@ -466,15 +495,12 @@ def answer_query(query, main_model, embed_model, all_embeddings):
         Do not exclude options based on value order differences. The small and big number can be exchanged. Do not favor any profile number over another - \
         if multiple matches exist, report all of them. Do not make assumptions based on the product name - find matches using dimensions only. \
         If no match is found, report 'Not found.' Do not make guesses. \
-        Reporting format: Ordered product | Suggested profile number(s) | Table | Page [Product name + dimensions] | [List of profile numbers]|[list of table titles]|[list of pages]|[Seokselle / For alloy]"
+        Reporting format: Ordered product | Suggested profile number(s) | Table | Page [Product name + dimensions] | [List of profile numbers] | [list of table titles] | [list of pages] | [Seokselle / For alloy]"
     prompt_text2 = "You are helpful and smart assistant. Answer users questions based solely on the context. Answer accurately and if possible, answer in Finnish."
     prompt = (
         f"You are helpful and smart assistant. Answer users questions based solely on the context. The context: '{context}' \n"
     )
-    # {prompt_text2}
 
-    #print("\n[DEBUG] Prompt for main model constructed:")
-    #print(prompt)
     system_message = {
         "role":"system",
         "content": f"{prompt_text}"}
@@ -493,14 +519,6 @@ def answer_query(query, main_model, embed_model, all_embeddings):
                       stream=False
 
         )
-
-        # response = main_model(prompt,
-        #                       max_tokens=512,
-        #                       temperature=0.6,
-        #                       repeat_penalty=1,
-        #                       stream=False,
-        #                       )
-        #answer = response["choices"][0]["text"].strip()
 
         answer = response["choices"][0]["message"]["content"].strip()
 
