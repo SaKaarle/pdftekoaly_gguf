@@ -403,7 +403,7 @@ def retrieve_relevant_chunks(query, embed_model, all_embeddings, top_k=3):
         return []
 
     # Cosine_Similarity:
-    
+
     # scored = []
     # print("[DEBUG] Comparing query embedding with stored embeddings:")
     # # Compare each stored embedding with the query embedding.
@@ -425,7 +425,7 @@ def retrieve_relevant_chunks(query, embed_model, all_embeddings, top_k=3):
     # return top_chunks
 
     # FAISS index
-    
+
     # Normalize the query embedding
     query_embedding = np.array(query_embedding).astype('float32')
     query_embedding /= np.linalg.norm(query_embedding)
@@ -503,7 +503,7 @@ def answer_query(query, main_model, embed_model, all_embeddings):
 
     system_message = {
         "role":"system",
-        "content": f"{prompt_text}"}
+        "content": f"{prompt_text2}"}
     user_message = {
         "role": "user",
         "content": f"Question:{query}, context: {context}"
