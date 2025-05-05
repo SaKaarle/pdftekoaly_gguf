@@ -70,14 +70,15 @@ import faiss
 # GGUFMALLI = f"{SIJAINTI}gemma-3-1b-it-Q4_K_M.gguf"
 
 #PC:
-
-PDF_SIJAINTI = "G:/code/pdftekoaly_gguf/pdf_data/"  # Folder containing PDF files
+# G:\Dokumentit\Satunnainen
+# G:/code/pdftekoaly_gguf/pdf_data/
+PDF_SIJAINTI = "G:/Dokumentit/Satunnainen/kuulokkeet/"  # Folder containing PDF files
 # "G:/code/pdftekoaly_gguf/data/"
 # "G:/code/pdftekoaly_gguf/pdf_data/"
 
-SIJAINTI = "H:/tekoaly/"
-MODAL_SIJAINTI = "H:/tekoaly/Embedding/"
-MODALMALLI = f"{MODAL_SIJAINTI}nomic-embed-text-v1.5.Q8_0.gguf"  # Embedding model
+SIJAINTI = "F:/Tekoaly/GGUF/"
+MODAL_SIJAINTI = "F:/Tekoaly/Embedding/"
+MODALMALLI = f"{MODAL_SIJAINTI}nomic-embed-text-v1.5.Q4_K_M.gguf"  # Embedding model
 GGUFMALLI = f"{SIJAINTI}gemma3-4b-it-abliterated.Q4_K_M.gguf"     # Main generation model
 
 # Dolphin3.0-Llama3.2-3B-Q4_K_M.gguf
@@ -89,6 +90,7 @@ GGUFMALLI = f"{SIJAINTI}gemma3-4b-it-abliterated.Q4_K_M.gguf"     # Main generat
 # nomic-embed-text-v1.5.Q8_0.gguf
 # nomic-embed-text-v1.5.Q4_K_M.gguf
 # all-MiniLM-L6-v2.Q4_K_M.gguf
+# nomic-embed-text-v2-moe.Q8_0.gguf
 
 # MUUTTUVAT:
 # esimerkiksi
