@@ -70,7 +70,7 @@ import faiss
 # D:/RAG/
 # D:/tekoalymallit/
 
-# PDF_SIJAINTI = "D:/RAG/"
+# PDF_SIJAINTI = "D:/RAG/" 
 
 # SIJAINTI = "D:/tekoalymallit/"
 # MODAL_SIJAINTI = "D:/tekoalymallit/Embedding/"
@@ -84,6 +84,7 @@ PDF_SIJAINTI = "G:/Dokumentit/Satunnainen/kuulokkeet/"  # Folder containing PDF 
 # "G:/code/pdftekoaly_gguf/data/"
 # "G:/code/pdftekoaly_gguf/pdf_data/"
 
+EMBEDTALLENNUS = "./embeddings/"
 SIJAINTI = "F:/Tekoaly/GGUF/"
 MODAL_SIJAINTI = "F:/Tekoaly/Embedding/"
 MODALMALLI = f"{MODAL_SIJAINTI}nomic-embed-text-v2-moe.Q8_0.gguf"  # Embedding model
@@ -336,40 +337,43 @@ async def process_pdf_file(pdf_path, embed_model):
             print(f"[WARNING] Embedding failed for chunk {idx + 1}/{len(chunks)}")
 
     # Save embeddings for this PDF to .npy
-    embedding_file_npy = os.path.splitext(pdf_path)[0] + "_embeddings.npy"
-    save_embeddings_to_npy(embedded_data, embedding_file_npy)
+    embedding_file_npy = os.path.splitext(os.path.basename(pdf_path))[0] + "_embeddings.npy"
+    save_embeddings_to_npy(embedded_data, embedding_file_npy, EMBEDTALLENNUS)
 
     # Save embeddings to a .txt file for debugging
-    embedding_file_txt = os.path.splitext(pdf_path)[0] + "_embeddings.txt"
-    save_embeddings_to_txt(embedded_data, embedding_file_txt)
+    embedding_file_txt = os.path.splitext(os.path.basename(pdf_path))[0] + "_embeddings.txt"
+    save_embeddings_to_txt(embedded_data, embedding_file_txt, EMBEDTALLENNUS)
 
     return embedded_data
 
 ################### SAVE TO EMBEDDING VECTORMAP TO NPY ###################
 
-def save_embeddings_to_npy(embeddings, file_path):
+def save_embeddings_to_npy(embeddings, file_path, embed_directory):
     """
     Save embeddings to a .npy file.
     """
     try:
-        np.save(file_path, embeddings)
-        print(f"[INFO] Saved embeddings to {file_path}")
+        full_file_path = os.path.join(embed_directory,file_path)
+        with open(full_file_path, "wb") as embed_f:
+            np.save(embed_f, embeddings)
+            print(f"[INFO] Saved embeddings to {embed_f}")
     except Exception as e:
-        print(f"[ERROR] Could not save embeddings to {file_path}: {e}")
+        print(f"[ERROR] Could not save embeddings to {embed_f}: {e}")
 
 ################### SAVE TO EMBEDDING VECTORMAP TO TXT ###################
 
-def save_embeddings_to_txt(embeddings, file_path):
+def save_embeddings_to_txt(embeddings, file_path, embed_directory):
     """
     Save embeddings to a .txt file for debugging.
     """
     try:
-        with open(file_path, "w", encoding="utf-8") as f:
+        full_file_path = os.path.join(embed_directory,file_path)
+        with open(full_file_path, "w", encoding="utf-8") as txt_f:
             for embedding in embeddings:
-                f.write(f"{embedding}\n")
-        print(f"[INFO] Saved embeddings to {file_path} for debugging")
+                txt_f.write(str(f"{embedding}\n"))
+                print(f"[INFO] Saved embeddings to {embed_directory} for debugging")
     except Exception as e:
-        print(f"[ERROR] Could not save embeddings to {file_path}: {e}")
+        print(f"[ERROR] Could not save embeddings to {embed_directory}: {e}")
 
 ################### PROCESS ALL PDFS ###################
 
