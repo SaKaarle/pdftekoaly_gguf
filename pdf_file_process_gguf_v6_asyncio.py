@@ -38,13 +38,21 @@ Cuda compilation tools, release 12.8, V12.8.93
 Build cuda_12.8.r12.8/compiler.35583870_0
 ```
   
+AMD/ROCM: `$env:CMAKE_ARGS="-DGGML_VULKAN=on"` tai `$env:CMAKE_ARGS="-DGGML_HIPBLAS=on"`
+NVIDIA: `$env:CMAKE_ARGS="-DGGML_CUDA=on"`
+CPU: ´$env:CMAKE_ARGS="-DGGML_BLAS=ON -DGGML_BLAS_VENDOR=OpenBLAS"´ tai pelkästään `pip install llama-cpp-python`
+  
+  
+  
 `pip install llama-cpp-python  --no-cache-dir --verbose` ja itse asennus Llama-cpp-pythonille.` --force ` jos pitää overwritettää asennus.
-
+  
+`pip show llama-cpp-python`: Testattu ja toimii versiolla 0.3.9
+  
 '''
 
 import os
 import glob
-import json
+# import json 
 import re
 import numpy as np
 import pdfplumber
@@ -53,7 +61,7 @@ from tqdm import tqdm
 import time
 import asyncio
 import aiofiles
-from concurrent.futures import ThreadPoolExecutor, ProcessPoolExecutor
+from concurrent.futures import ThreadPoolExecutor
 import faiss
 
 # KANSIOT JA SIJAINNIT:
@@ -78,7 +86,7 @@ PDF_SIJAINTI = "G:/Dokumentit/Satunnainen/kuulokkeet/"  # Folder containing PDF 
 
 SIJAINTI = "F:/Tekoaly/GGUF/"
 MODAL_SIJAINTI = "F:/Tekoaly/Embedding/"
-MODALMALLI = f"{MODAL_SIJAINTI}nomic-embed-text-v1.5.Q4_K_M.gguf"  # Embedding model
+MODALMALLI = f"{MODAL_SIJAINTI}nomic-embed-text-v2-moe.Q8_0.gguf"  # Embedding model
 GGUFMALLI = f"{SIJAINTI}gemma3-4b-it-abliterated.Q4_K_M.gguf"     # Main generation model
 
 # Dolphin3.0-Llama3.2-3B-Q4_K_M.gguf
@@ -164,9 +172,12 @@ async def main():
             answer = answer_query(query, main_model, embed_model, all_embeddings)
             print(f"\nQuestion: '{query}' \n")
             print(f"\nAnswer:\n{answer}")
+            
+        except FileNotFoundError as file_e:
+            print(f"[ERROR] File not found: {file_e}")
         except Exception as e:
-            print(f"[ERROR] An error occurred during the Q&A process: {e}")
-
+            print(f"[ERROR] An unexpected error occurred: {e}")
+            
     # Cleanup (if needed)
     del main_model
     del embed_model
@@ -372,7 +383,7 @@ async def process_all_pdfs_multithreaded(pdf_folder, embed_model):
     all_embeddings = []
 
     loop = asyncio.get_running_loop()
-    with ThreadPoolExecutor() as thread_pool, ProcessPoolExecutor() as process_pool:
+    with ThreadPoolExecutor() as thread_pool:
         tasks = [
             loop.run_in_executor(thread_pool, asyncio.run, process_pdf_file(pdf, embed_model))
             for pdf in pdf_files
