@@ -24,7 +24,7 @@ Embedding mallit:
 ### Testattu:
   
 - Python 3.11.11
-- llama-cpp-python versiot: 0.3.6 - 0.3.8
+- llama-cpp-python versiot: 0.3.6 - 0.3.9
 - nvcc versio: 12.8
 - NumPy versio: 1.25.* AMD / Vulkan API
 - NumPy versio: 2.2.4 NVidia / AMD toimii?
