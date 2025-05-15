@@ -58,27 +58,31 @@ import faiss
 
 # KANSIOT JA SIJAINNIT:
 
-#Läppäri:
+# Läppäri:
 # D:/RAG/
 # D:/tekoalymallit/
+# C:\VSC\pdftekoaly_gguf\pdftekoaly_gguf\data
+# all-MiniLM-L6-v2.Q4_K_M.gguf
+# nomic-embed-text-v1.5.Q4_K_M.gguf
+# nomic-embed-text-v1.5.Q8_0.gguf
 
-# PDF_SIJAINTI = "D:/RAG/"
+PDF_SIJAINTI = "C:/VSC/pdftekoaly_gguf/pdftekoaly_gguf/data"
 
-# SIJAINTI = "D:/tekoalymallit/"
-# MODAL_SIJAINTI = "D:/tekoalymallit/Embedding/"
-# MODALMALLI = f"{MODAL_SIJAINTI}all-MiniLM-L6-v2.Q4_K_M.gguf"  # Embedding model
-# GGUFMALLI = f"{SIJAINTI}gemma-3-1b-it-Q4_K_M.gguf"
+SIJAINTI = "D:/tekoalymallit/"
+MODAL_SIJAINTI = "D:/tekoalymallit/Embedding/"
+MODALMALLI = f"{MODAL_SIJAINTI}nomic-embed-text-v1.5.Q8_0.gguf"  # Embedding model
+GGUFMALLI = f"{SIJAINTI}gemma-3-1b-it-Q4_K_M.gguf"
 
 #PC:
 
-PDF_SIJAINTI = "G:/code/pdftekoaly_gguf/pdf_data/"  # Folder containing PDF files
+# PDF_SIJAINTI = "G:/code/pdftekoaly_gguf/pdf_data/"  # Folder containing PDF files
 # "G:/code/pdftekoaly_gguf/data/"
 # "G:/code/pdftekoaly_gguf/pdf_data/"
 
-SIJAINTI = "H:/tekoaly/"
-MODAL_SIJAINTI = "H:/tekoaly/Embedding/"
-MODALMALLI = f"{MODAL_SIJAINTI}nomic-embed-text-v1.5.Q8_0.gguf"  # Embedding model
-GGUFMALLI = f"{SIJAINTI}gemma3-4b-it-abliterated.Q4_K_M.gguf"     # Main generation model
+# SIJAINTI = "H:/tekoaly/"
+# MODAL_SIJAINTI = "H:/tekoaly/Embedding/"
+# MODALMALLI = f"{MODAL_SIJAINTI}nomic-embed-text-v1.5.Q8_0.gguf"  # Embedding model
+# GGUFMALLI = f"{SIJAINTI}gemma3-4b-it-abliterated.Q4_K_M.gguf"     # Main generation model
 
 # Dolphin3.0-Llama3.2-3B-Q4_K_M.gguf
 # Phi-4-mini-instruct-Q4_K_M.gguf
@@ -488,7 +492,7 @@ def answer_query(query, main_model, embed_model, all_embeddings):
     # Build a context prompt from the retrieved chunks.
     context = "\n---\n".join(chunk["chunk"] for chunk in relevant_chunks)
     # Answer the question based solely on the following context. Answer and must provide and give information prof.nr of set dimension and top 3 results for the possible aluminium profile and it's profile number. Dimensional details and notations of aluminium profiles that is asked by the user.
-    prompt_text = "Analyze the catalog and search the tables for all rows that contain the ordered product dimensions, \
+    prompt_text = "Answer the question based solely on the following context. Analyze the catalog and search the tables for all rows that contain the ordered product dimensions, \
         in any order. If you find multiple possible five digits profile numbers (prof.nr), list them all in order. \
         Do not filter any out, unless they are completely the wrong item according to the name. \
         Dimensions can appear in any order! (e.g., 25x40mm = 40x25mm). \
@@ -496,18 +500,19 @@ def answer_query(query, main_model, embed_model, all_embeddings):
         if multiple matches exist, report all of them. Do not make assumptions based on the product name - find matches using dimensions only. \
         If no match is found, report 'Not found.' Do not make guesses. \
         Reporting format: Ordered product | Suggested profile number(s) | Table | Page [Product name + dimensions] | [List of profile numbers] | [list of table titles] | [list of pages] | [Seokselle / For alloy]"
-    prompt_text2 = "You are helpful and smart assistant. Answer users questions based solely on the context. Answer accurately and if possible, answer in Finnish."
+    prompt_text2 = "You are helpful and smart assistant. Answer users questions based solely on the context. Answer in Finnish."
     prompt = (
         f"You are helpful and smart assistant. Answer users questions based solely on the context. The context: '{context}' \n"
     )
 
     system_message = {
         "role":"system",
-        "content": f"{prompt_text2}"}
+        "content": f"{prompt_text}"}
     user_message = {
         "role": "user",
         "content": f"Question:{query}, context: {context}"
     }
+    #print(user_message)
     try:
         # Generate answer using the main model.
         response = main_model.create_chat_completion(
