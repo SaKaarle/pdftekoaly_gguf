@@ -66,27 +66,45 @@ import faiss
 
 # KANSIOT JA SIJAINNIT:
 
+##########
 # Läppäri:
+##########
+
+# C:\Users\Saku-Laptop\.lmstudio\models\
 # D:/RAG/
 # D:/tekoalymallit/
 # C:\VSC\pdftekoaly_gguf\pdftekoaly_gguf\data
 # all-MiniLM-L6-v2.Q4_K_M.gguf
 # nomic-embed-text-v1.5.Q4_K_M.gguf
 # nomic-embed-text-v1.5.Q8_0.gguf
-
-<<<<<<< HEAD
+# nomic-embed-text-v2-moe.Q8_0.gguf
+# C:\Users\Saku-Laptop\.lmstudio\models\nomic-ai\nomic-embed-text-v2-moe-GGUF\nomic-embed-text-v2-moe.Q8_0.gguf
+# C:/Users/Saku-Laptop/.lmstudio/models/lmstudio-community/gemma-3-1B-it-qat-GGUF/gemma-3-1B-it-QAT-Q4_0.gguf
+# C:/Users/Saku-Laptop/.lmstudio/models/bartowski/mlabonne_gemma-3-4b-it-abliterated-GGUF/
 PDF_SIJAINTI = "C:/VSC/pdftekoaly_gguf/pdftekoaly_gguf/data"
-=======
 # PDF_SIJAINTI = "D:/RAG/" 
->>>>>>> 4494d3a9648af317f84cfbf82640a74bc22b804b
 
-SIJAINTI = "D:/tekoalymallit/"
-MODAL_SIJAINTI = "D:/tekoalymallit/Embedding/"
-MODALMALLI = f"{MODAL_SIJAINTI}nomic-embed-text-v1.5.Q8_0.gguf"  # Embedding model
-GGUFMALLI = f"{SIJAINTI}gemma-3-1b-it-Q4_K_M.gguf"
+EMBEDTALLENNUS = "./embeddings/"
+SIJAINTI = "C:/Users/Saku-Laptop/.lmstudio/models/bartowski/mlabonne_gemma-3-4b-it-abliterated-GGUF/"
+MODAL_SIJAINTI = "C:/Users/Saku-Laptop/.lmstudio/models/nomic-ai/nomic-embed-text-v2-moe-GGUF/"
+MODALMALLI = f"{MODAL_SIJAINTI}nomic-embed-text-v2-moe.Q8_0.gguf"  # Embedding model
+GGUFMALLI = f"{SIJAINTI}mlabonne_gemma-3-4b-it-abliterated-IQ3_M.gguf"
 
+##########
 #PC:
-<<<<<<< HEAD
+##########
+
+# G:\Dokumentit\Satunnainen
+# G:/code/pdftekoaly_gguf/pdf_data/
+# PDF_SIJAINTI = "G:/Dokumentit/Satunnainen/kuulokkeet/"  # Folder containing PDF files
+# "G:/code/pdftekoaly_gguf/data/"
+# "G:/code/pdftekoaly_gguf/pdf_data/"
+
+# EMBEDTALLENNUS = "./embeddings/"
+# SIJAINTI = "F:/Tekoaly/GGUF/"
+# MODAL_SIJAINTI = "F:/Tekoaly/Embedding/"
+# MODALMALLI = f"{MODAL_SIJAINTI}nomic-embed-text-v2-moe.Q8_0.gguf"  # Embedding model
+# GGUFMALLI = f"{SIJAINTI}gemma3-4b-it-abliterated.Q4_K_M.gguf"     # Main generation model
 
 # PDF_SIJAINTI = "G:/code/pdftekoaly_gguf/pdf_data/"  # Folder containing PDF files
 # "G:/code/pdftekoaly_gguf/data/"
@@ -96,25 +114,13 @@ GGUFMALLI = f"{SIJAINTI}gemma-3-1b-it-Q4_K_M.gguf"
 # MODAL_SIJAINTI = "H:/tekoaly/Embedding/"
 # MODALMALLI = f"{MODAL_SIJAINTI}nomic-embed-text-v1.5.Q8_0.gguf"  # Embedding model
 # GGUFMALLI = f"{SIJAINTI}gemma3-4b-it-abliterated.Q4_K_M.gguf"     # Main generation model
-=======
-# G:\Dokumentit\Satunnainen
-# G:/code/pdftekoaly_gguf/pdf_data/
-PDF_SIJAINTI = "G:/Dokumentit/Satunnainen/kuulokkeet/"  # Folder containing PDF files
-# "G:/code/pdftekoaly_gguf/data/"
-# "G:/code/pdftekoaly_gguf/pdf_data/"
-
-EMBEDTALLENNUS = "./embeddings/"
-SIJAINTI = "F:/Tekoaly/GGUF/"
-MODAL_SIJAINTI = "F:/Tekoaly/Embedding/"
-MODALMALLI = f"{MODAL_SIJAINTI}nomic-embed-text-v2-moe.Q8_0.gguf"  # Embedding model
-GGUFMALLI = f"{SIJAINTI}gemma3-4b-it-abliterated.Q4_K_M.gguf"     # Main generation model
->>>>>>> 4494d3a9648af317f84cfbf82640a74bc22b804b
 
 # Dolphin3.0-Llama3.2-3B-Q4_K_M.gguf
 # Phi-4-mini-instruct-Q4_K_M.gguf
 # Phi-3.5-mini-instruct_Uncensored-Q4_K_M.gguf
 # gemma3-4b-it-abliterated.Q4_K_M.gguf
 # gemma-3-1b-it-Q4_K_M.gguf
+# Qwen_Qwen3-1.7B-IQ4_NL.gguf
 
 # nomic-embed-text-v1.5.Q8_0.gguf
 # nomic-embed-text-v1.5.Q4_K_M.gguf
