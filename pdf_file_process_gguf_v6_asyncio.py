@@ -38,13 +38,21 @@ Cuda compilation tools, release 12.8, V12.8.93
 Build cuda_12.8.r12.8/compiler.35583870_0
 ```
   
+AMD/ROCM: `$env:CMAKE_ARGS="-DGGML_VULKAN=on"` tai `$env:CMAKE_ARGS="-DGGML_HIPBLAS=on"`
+NVIDIA: `$env:CMAKE_ARGS="-DGGML_CUDA=on"`
+CPU: ´$env:CMAKE_ARGS="-DGGML_BLAS=ON -DGGML_BLAS_VENDOR=OpenBLAS"´ tai pelkästään `pip install llama-cpp-python`
+  
+  
+  
 `pip install llama-cpp-python  --no-cache-dir --verbose` ja itse asennus Llama-cpp-pythonille.` --force ` jos pitää overwritettää asennus.
-
+  
+`pip show llama-cpp-python`: Testattu ja toimii versiolla 0.3.9
+  
 '''
 
 import os
 import glob
-import json
+# import json 
 import re
 import numpy as np
 import pdfplumber
@@ -53,7 +61,7 @@ from tqdm import tqdm
 import time
 import asyncio
 import aiofiles
-from concurrent.futures import ThreadPoolExecutor, ProcessPoolExecutor
+from concurrent.futures import ThreadPoolExecutor
 import faiss
 
 # KANSIOT JA SIJAINNIT:
@@ -66,7 +74,11 @@ import faiss
 # nomic-embed-text-v1.5.Q4_K_M.gguf
 # nomic-embed-text-v1.5.Q8_0.gguf
 
+<<<<<<< HEAD
 PDF_SIJAINTI = "C:/VSC/pdftekoaly_gguf/pdftekoaly_gguf/data"
+=======
+# PDF_SIJAINTI = "D:/RAG/" 
+>>>>>>> 4494d3a9648af317f84cfbf82640a74bc22b804b
 
 SIJAINTI = "D:/tekoalymallit/"
 MODAL_SIJAINTI = "D:/tekoalymallit/Embedding/"
@@ -74,6 +86,7 @@ MODALMALLI = f"{MODAL_SIJAINTI}nomic-embed-text-v1.5.Q8_0.gguf"  # Embedding mod
 GGUFMALLI = f"{SIJAINTI}gemma-3-1b-it-Q4_K_M.gguf"
 
 #PC:
+<<<<<<< HEAD
 
 # PDF_SIJAINTI = "G:/code/pdftekoaly_gguf/pdf_data/"  # Folder containing PDF files
 # "G:/code/pdftekoaly_gguf/data/"
@@ -83,6 +96,19 @@ GGUFMALLI = f"{SIJAINTI}gemma-3-1b-it-Q4_K_M.gguf"
 # MODAL_SIJAINTI = "H:/tekoaly/Embedding/"
 # MODALMALLI = f"{MODAL_SIJAINTI}nomic-embed-text-v1.5.Q8_0.gguf"  # Embedding model
 # GGUFMALLI = f"{SIJAINTI}gemma3-4b-it-abliterated.Q4_K_M.gguf"     # Main generation model
+=======
+# G:\Dokumentit\Satunnainen
+# G:/code/pdftekoaly_gguf/pdf_data/
+PDF_SIJAINTI = "G:/Dokumentit/Satunnainen/kuulokkeet/"  # Folder containing PDF files
+# "G:/code/pdftekoaly_gguf/data/"
+# "G:/code/pdftekoaly_gguf/pdf_data/"
+
+EMBEDTALLENNUS = "./embeddings/"
+SIJAINTI = "F:/Tekoaly/GGUF/"
+MODAL_SIJAINTI = "F:/Tekoaly/Embedding/"
+MODALMALLI = f"{MODAL_SIJAINTI}nomic-embed-text-v2-moe.Q8_0.gguf"  # Embedding model
+GGUFMALLI = f"{SIJAINTI}gemma3-4b-it-abliterated.Q4_K_M.gguf"     # Main generation model
+>>>>>>> 4494d3a9648af317f84cfbf82640a74bc22b804b
 
 # Dolphin3.0-Llama3.2-3B-Q4_K_M.gguf
 # Phi-4-mini-instruct-Q4_K_M.gguf
@@ -93,6 +119,7 @@ GGUFMALLI = f"{SIJAINTI}gemma-3-1b-it-Q4_K_M.gguf"
 # nomic-embed-text-v1.5.Q8_0.gguf
 # nomic-embed-text-v1.5.Q4_K_M.gguf
 # all-MiniLM-L6-v2.Q4_K_M.gguf
+# nomic-embed-text-v2-moe.Q8_0.gguf
 
 # MUUTTUVAT:
 # esimerkiksi
@@ -166,9 +193,12 @@ async def main():
             answer = answer_query(query, main_model, embed_model, all_embeddings)
             print(f"\nQuestion: '{query}' \n")
             print(f"\nAnswer:\n{answer}")
+            
+        except FileNotFoundError as file_e:
+            print(f"[ERROR] File not found: {file_e}")
         except Exception as e:
-            print(f"[ERROR] An error occurred during the Q&A process: {e}")
-
+            print(f"[ERROR] An unexpected error occurred: {e}")
+            
     # Cleanup (if needed)
     del main_model
     del embed_model
@@ -327,40 +357,43 @@ async def process_pdf_file(pdf_path, embed_model):
             print(f"[WARNING] Embedding failed for chunk {idx + 1}/{len(chunks)}")
 
     # Save embeddings for this PDF to .npy
-    embedding_file_npy = os.path.splitext(pdf_path)[0] + "_embeddings.npy"
-    save_embeddings_to_npy(embedded_data, embedding_file_npy)
+    embedding_file_npy = os.path.splitext(os.path.basename(pdf_path))[0] + "_embeddings.npy"
+    save_embeddings_to_npy(embedded_data, embedding_file_npy, EMBEDTALLENNUS)
 
     # Save embeddings to a .txt file for debugging
-    embedding_file_txt = os.path.splitext(pdf_path)[0] + "_embeddings.txt"
-    save_embeddings_to_txt(embedded_data, embedding_file_txt)
+    embedding_file_txt = os.path.splitext(os.path.basename(pdf_path))[0] + "_embeddings.txt"
+    save_embeddings_to_txt(embedded_data, embedding_file_txt, EMBEDTALLENNUS)
 
     return embedded_data
 
 ################### SAVE TO EMBEDDING VECTORMAP TO NPY ###################
 
-def save_embeddings_to_npy(embeddings, file_path):
+def save_embeddings_to_npy(embeddings, file_path, embed_directory):
     """
     Save embeddings to a .npy file.
     """
     try:
-        np.save(file_path, embeddings)
-        print(f"[INFO] Saved embeddings to {file_path}")
+        full_file_path = os.path.join(embed_directory,file_path)
+        with open(full_file_path, "wb") as embed_f:
+            np.save(embed_f, embeddings)
+            print(f"[INFO] Saved embeddings to {embed_f}")
     except Exception as e:
-        print(f"[ERROR] Could not save embeddings to {file_path}: {e}")
+        print(f"[ERROR] Could not save embeddings to {embed_f}: {e}")
 
 ################### SAVE TO EMBEDDING VECTORMAP TO TXT ###################
 
-def save_embeddings_to_txt(embeddings, file_path):
+def save_embeddings_to_txt(embeddings, file_path, embed_directory):
     """
     Save embeddings to a .txt file for debugging.
     """
     try:
-        with open(file_path, "w", encoding="utf-8") as f:
+        full_file_path = os.path.join(embed_directory,file_path)
+        with open(full_file_path, "w", encoding="utf-8") as txt_f:
             for embedding in embeddings:
-                f.write(f"{embedding}\n")
-        print(f"[INFO] Saved embeddings to {file_path} for debugging")
+                txt_f.write(str(f"{embedding}\n"))
+                print(f"[INFO] Saved embeddings to {embed_directory} for debugging")
     except Exception as e:
-        print(f"[ERROR] Could not save embeddings to {file_path}: {e}")
+        print(f"[ERROR] Could not save embeddings to {embed_directory}: {e}")
 
 ################### PROCESS ALL PDFS ###################
 
@@ -374,7 +407,7 @@ async def process_all_pdfs_multithreaded(pdf_folder, embed_model):
     all_embeddings = []
 
     loop = asyncio.get_running_loop()
-    with ThreadPoolExecutor() as thread_pool, ProcessPoolExecutor() as process_pool:
+    with ThreadPoolExecutor() as thread_pool:
         tasks = [
             loop.run_in_executor(thread_pool, asyncio.run, process_pdf_file(pdf, embed_model))
             for pdf in pdf_files
