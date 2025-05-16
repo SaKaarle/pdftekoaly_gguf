@@ -47,7 +47,14 @@ CPU: ´$env:CMAKE_ARGS="-DGGML_BLAS=ON -DGGML_BLAS_VENDOR=OpenBLAS"´ tai pelkä
 `pip install llama-cpp-python  --no-cache-dir --verbose` ja itse asennus Llama-cpp-pythonille.` --force ` jos pitää overwritettää asennus.
   
 `pip show llama-cpp-python`: Testattu ja toimii versiolla 0.3.9
-  
+
+uv venv: `CMAKE_ARGS="-DGGML_VULKAN=on" uv pip install llama-cpp-python==0.3.9 --verbose --reinstall`
+```
+DEBUG uv 0.7.4
+DEBUG Searching for default Python interpreter in virtual environments
+DEBUG Found `cpython-3.13.3-linux-x86_64-gnu` at `/home/saku/VSC/pdftekoaly_gguf/pdftekoaly_gguf/.venv/bin/python3` 
+```   
+
 '''
 
 import os
@@ -71,44 +78,47 @@ import faiss
 ##########
 
 # C:\Users\Saku-Laptop\.lmstudio\models\
-# D:/RAG/
-# D:/tekoalymallit/
-# C:\VSC\pdftekoaly_gguf\pdftekoaly_gguf\data
-# all-MiniLM-L6-v2.Q4_K_M.gguf
-# nomic-embed-text-v1.5.Q4_K_M.gguf
-# nomic-embed-text-v1.5.Q8_0.gguf
-# nomic-embed-text-v2-moe.Q8_0.gguf
-# C:\Users\Saku-Laptop\.lmstudio\models\nomic-ai\nomic-embed-text-v2-moe-GGUF\nomic-embed-text-v2-moe.Q8_0.gguf
+
+# C:/Users/Saku-Laptop/.lmstudio/models/nomic-ai/nomic-embed-text-v2-moe-GGUF/nomic-embed-text-v2-moe.Q8_0.gguf
 # C:/Users/Saku-Laptop/.lmstudio/models/lmstudio-community/gemma-3-1B-it-qat-GGUF/gemma-3-1B-it-QAT-Q4_0.gguf
 # C:/Users/Saku-Laptop/.lmstudio/models/bartowski/mlabonne_gemma-3-4b-it-abliterated-GGUF/
-PDF_SIJAINTI = "C:/VSC/pdftekoaly_gguf/pdftekoaly_gguf/data"
-# PDF_SIJAINTI = "D:/RAG/" 
 
-EMBEDTALLENNUS = "./embeddings/"
-SIJAINTI = "C:/Users/Saku-Laptop/.lmstudio/models/bartowski/mlabonne_gemma-3-4b-it-abliterated-GGUF/"
-MODAL_SIJAINTI = "C:/Users/Saku-Laptop/.lmstudio/models/nomic-ai/nomic-embed-text-v2-moe-GGUF/"
-MODALMALLI = f"{MODAL_SIJAINTI}nomic-embed-text-v2-moe.Q8_0.gguf"  # Embedding model
-GGUFMALLI = f"{SIJAINTI}mlabonne_gemma-3-4b-it-abliterated-IQ3_M.gguf"
+# PDF_SIJAINTI = "C:/VSC/pdftekoaly_gguf/pdftekoaly_gguf/data"
+# # PDF_SIJAINTI = "D:/RAG/" 
+
+# EMBEDTALLENNUS = "./embeddings/"
+# SIJAINTI = "C:/Users/Saku-Laptop/.lmstudio/models/bartowski/mlabonne_gemma-3-4b-it-abliterated-GGUF/"
+# MODAL_SIJAINTI = "C:/Users/Saku-Laptop/.lmstudio/models/nomic-ai/nomic-embed-text-v2-moe-GGUF/"
+# MODALMALLI = f"{MODAL_SIJAINTI}nomic-embed-text-v2-moe.Q8_0.gguf"  # Embedding model
+# GGUFMALLI = f"{SIJAINTI}mlabonne_gemma-3-4b-it-abliterated-IQ3_M.gguf"
 
 ##########
 #PC:
 ##########
 
-# G:\Dokumentit\Satunnainen
-# G:/code/pdftekoaly_gguf/pdf_data/
 # PDF_SIJAINTI = "G:/Dokumentit/Satunnainen/kuulokkeet/"  # Folder containing PDF files
-# "G:/code/pdftekoaly_gguf/data/"
-# "G:/code/pdftekoaly_gguf/pdf_data/"
-
-# EMBEDTALLENNUS = "./embeddings/"
-# SIJAINTI = "F:/Tekoaly/GGUF/"
-# MODAL_SIJAINTI = "F:/Tekoaly/Embedding/"
-# MODALMALLI = f"{MODAL_SIJAINTI}nomic-embed-text-v2-moe.Q8_0.gguf"  # Embedding model
-# GGUFMALLI = f"{SIJAINTI}gemma3-4b-it-abliterated.Q4_K_M.gguf"     # Main generation model
-
 # PDF_SIJAINTI = "G:/code/pdftekoaly_gguf/pdf_data/"  # Folder containing PDF files
 # "G:/code/pdftekoaly_gguf/data/"
 # "G:/code/pdftekoaly_gguf/pdf_data/"
+
+# SIJAINTI = "H:/tekoaly/"
+# MODAL_SIJAINTI = "H:/tekoaly/Embedding/"
+# MODALMALLI = f"{MODAL_SIJAINTI}nomic-embed-text-v1.5.Q8_0.gguf"  # Embedding model
+# GGUFMALLI = f"{SIJAINTI}gemma3-4b-it-abliterated.Q4_K_M.gguf"     # Main generation model
+
+##########
+#LINUX:
+##########
+
+PDF_SIJAINTI = "/media/hdd4tb/Dokumentit/Satunnainen/kuulokkeet"
+EMBEDTALLENNUS = "./embeddings/"
+# /media/hdd2tb/Tekoaly/GGUFlmstudio/second-state/Qwen3-4B-GGUF/Qwen3-4B-Q4_K_M.gguf
+# /media/hdd2tb/Tekoaly/GGUF/gemma3-4b-it-abliterated.Q4_K_M.gguf
+# /media/hdd2tb/Tekoaly/GGUFlmstudio/mradermacher/gemma3-4b-it-abliterated-GGUF/gemma3-4b-it-abliterated.Q4_K_M.gguf
+SIJAINTI = "/media/hdd2tb/Tekoaly/GGUFlmstudio/mradermacher/gemma3-4b-it-abliterated-GGUF/"
+MODAL_SIJAINTI = "/media/hdd2tb/Tekoaly/Embedding/"
+MODALMALLI = f"{MODAL_SIJAINTI}nomic-embed-text-v2-moe.Q8_0.gguf"  # Embedding model
+GGUFMALLI = f"{SIJAINTI}gemma3-4b-it-abliterated.Q4_K_M.gguf"     # Main generation model
 
 # SIJAINTI = "H:/tekoaly/"
 # MODAL_SIJAINTI = "H:/tekoaly/Embedding/"
@@ -132,6 +142,13 @@ GGUFMALLI = f"{SIJAINTI}mlabonne_gemma-3-4b-it-abliterated-IQ3_M.gguf"
 
 CHUNK_SIZE = 600
 OVERLAP = 150
+
+# TOKENien määrä jota vaihtaa
+# 32768 16384 8192 4096 2048 depends of the chunked and overlapped size and numbers.
+MODALMAXTOKEN = 512 # 2048 tai 512
+MAXVIESTITOKEN = 8192 # Riippuu paljon RAG tokeneita se ottaa vastaan.
+VASTAUSTOKEN = 1024 #vastauksen pituus määrittyy tällä.
+
 
 # FUNKTIOT:
 
@@ -160,7 +177,7 @@ async def main():
         n_gpu_layers=-1,  # adjust this value for your setup
         verbose=False,
         embedding=True, # Loads Embedded model.
-        n_ctx=2048
+        n_ctx=MODALMAXTOKEN
     )
     # ASK the user if they want to process PDF files or use existing vector maps from JSON file:
     use_existing_npy = input("Do you want to use existing '.npy' files with embeddings? (y/n): ")
@@ -186,7 +203,7 @@ async def main():
         model_path=GGUFMALLI,
         n_gpu_layers=-1,  # adjust as needed for your setup
         verbose=False,
-        n_ctx=8192 # 32768 16384 8192 4096 2048 depends of the chunked and overlapped size and numbers.
+        n_ctx=MAXVIESTITOKEN # 32768 16384 8192 4096 2048 depends of the chunked and overlapped size and numbers.
     )
 
     # Q&A loop
@@ -539,14 +556,14 @@ def answer_query(query, main_model, embed_model, all_embeddings):
         if multiple matches exist, report all of them. Do not make assumptions based on the product name - find matches using dimensions only. \
         If no match is found, report 'Not found.' Do not make guesses. \
         Reporting format: Ordered product | Suggested profile number(s) | Table | Page [Product name + dimensions] | [List of profile numbers] | [list of table titles] | [list of pages] | [Seokselle / For alloy]"
-    prompt_text2 = "You are helpful and smart assistant. Answer users questions based solely on the context. Answer in Finnish."
+    prompt_text2 = "You are helpful and smart assistant. Answer users questions based solely on the context." #Answer in Finnish. Kuinka korjaan HD681 kuulokkeet? Mitä tarvitsen?
     prompt = (
         f"You are helpful and smart assistant. Answer users questions based solely on the context. The context: '{context}' \n"
     )
 
     system_message = {
         "role":"system",
-        "content": f"{prompt_text}"}
+        "content": f"{prompt_text2}"}
     user_message = {
         "role": "user",
         "content": f"Question:{query}, context: {context}"
@@ -557,7 +574,7 @@ def answer_query(query, main_model, embed_model, all_embeddings):
         response = main_model.create_chat_completion(
             messages=[system_message,
                       user_message],
-                      max_tokens=1024,
+                      max_tokens=VASTAUSTOKEN,
                       temperature=0.1,
                       repeat_penalty=1,
                       stream=False
