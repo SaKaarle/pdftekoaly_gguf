@@ -56,6 +56,12 @@ DEBUG Found `cpython-3.13.3-linux-x86_64-gnu` at `/home/saku/VSC/pdftekoaly_gguf
 Esimerkki kysymykset:  Give me table information of Lattatangot and list them all here in "|"
 
 
+Dataesimerkkejä: 
+- Source: https://stat.fi/tup/avoin-data/pxweb.html
+- File: https://stat.fi/media/uploads/org/avoindata/pxweb_api-ohje.pdf
+
+- Source: https://www.opendata.fi/data/en_GB/dataset/?q%3D%26sort%3Dsource%2Basc%26collection_type%3DInteroperability%2BTools%26res_format%3Dhtm=&_res_format_limit=0&_vocab_keywords_fi_limit=0&_groups_limit=0&_vocab_keywords_sv_limit=0&_license_id_limit=0&res_format=pdf&_organization_limit=0&collection_type=Open+Data
+
 '''
 
 import os
@@ -183,7 +189,8 @@ async def main():
         print(f"[INFO] Loaded {len(all_embeddings)} embeddings from NPY files.")
         # Check if there are any embeddings loaded
         if all_embeddings:
-            print(f"[DEBUG] First embedding: {all_embeddings[0]}")
+            print(f"[DEBUG] First embedding: {all_embeddings[0]['embedding'][:10]}...")
+            print(f"[DEBUG] First chunk: {all_embeddings[0]['chunk'][:50]}...")
     else:
         start_time = time.time()
         all_embeddings = await process_all_pdfs_multithreaded(PDF_SIJAINTI, embed_model)
