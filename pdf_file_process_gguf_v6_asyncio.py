@@ -183,7 +183,7 @@ async def main():
     use_existing_npy = input("Do you want to use existing '.npy' files with embeddings? (y/n): ")
     if use_existing_npy.lower() == 'y':
         # Load embeddings from the JSON file
-        all_embeddings = load_embeddings_from_npy(PDF_SIJAINTI)
+        all_embeddings = load_embeddings_from_npy(EMBEDTALLENNUS)
         print(f"[INFO] Loaded {len(all_embeddings)} embeddings from NPY files.")
         # Check if there are any embeddings loaded
         if all_embeddings:
