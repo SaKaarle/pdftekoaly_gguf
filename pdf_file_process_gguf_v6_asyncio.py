@@ -48,7 +48,7 @@ CPU: ´$env:CMAKE_ARGS="-DGGML_BLAS=ON -DGGML_BLAS_VENDOR=OpenBLAS"´ tai pelkä
   
 `pip show llama-cpp-python`: Testattu ja toimii versiolla 0.3.9
 
-uv venv: `CMAKE_ARGS="-DGGML_VULKAN=on" uv pip install llama-cpp-python==0.3.9 --verbose --reinstall --no-cache-dir` 
+uv venv: `CMAKE_ARGS="-DGGML_VULKAN=on" uv pip install llama-cpp-python==0.3.9 --verbose --reinstall --no-cache-dir --verbose` 
 ```
 DEBUG uv 0.7.4
 DEBUG Searching for default Python interpreter in virtual environments
