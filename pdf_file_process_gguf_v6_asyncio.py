@@ -108,7 +108,7 @@ match (int(FILE_LOCATION)):
         GGUFMALLI = f"{SIJAINTI}mlabonne_gemma-3-4b-it-abliterated-IQ3_M.gguf"
         
     case _:
-        print("invalid file location.")   
+        print(f"[ERROR]: Invalid file location. Check 'FILE_LOCATION' value. Value is: {FILE_LOCATION} \n")   
 # end match
 
 # Dolphin3.0-Llama3.2-3B-Q4_K_M.gguf
