@@ -73,57 +73,43 @@ import faiss
 
 # KANSIOT JA SIJAINNIT:
 
-##########
-# Läppäri:
-##########
+# Gemma3 4B it abliterated Q4_K_M + Nomic Embed Text V2 = 4387 MB
 
-# C:\Users\Saku-Laptop\.lmstudio\models\
+FILE_LOCATION = 1
+# 1: PC, 2: LINUX, 3: Laptop
 
-# C:/Users/Saku-Laptop/.lmstudio/models/nomic-ai/nomic-embed-text-v2-moe-GGUF/nomic-embed-text-v2-moe.Q8_0.gguf
-# C:/Users/Saku-Laptop/.lmstudio/models/lmstudio-community/gemma-3-1B-it-qat-GGUF/gemma-3-1B-it-QAT-Q4_0.gguf
-# C:/Users/Saku-Laptop/.lmstudio/models/bartowski/mlabonne_gemma-3-4b-it-abliterated-GGUF/
-
-# PDF_SIJAINTI = "C:/VSC/pdftekoaly_gguf/pdftekoaly_gguf/data"
-# # PDF_SIJAINTI = "D:/RAG/" 
-
-# EMBEDTALLENNUS = "./embeddings/"
-# SIJAINTI = "C:/Users/Saku-Laptop/.lmstudio/models/bartowski/mlabonne_gemma-3-4b-it-abliterated-GGUF/"
-# MODAL_SIJAINTI = "C:/Users/Saku-Laptop/.lmstudio/models/nomic-ai/nomic-embed-text-v2-moe-GGUF/"
-# MODALMALLI = f"{MODAL_SIJAINTI}nomic-embed-text-v2-moe.Q8_0.gguf"  # Embedding model
-# GGUFMALLI = f"{SIJAINTI}mlabonne_gemma-3-4b-it-abliterated-IQ3_M.gguf"
-
-##########
-#PC:
-##########
-
-# PDF_SIJAINTI = "G:/Dokumentit/Satunnainen/kuulokkeet/"  # Folder containing PDF files
-# PDF_SIJAINTI = "G:/code/pdftekoaly_gguf/pdf_data/"  # Folder containing PDF files
-# "G:/code/pdftekoaly_gguf/data/"
-# "G:/code/pdftekoaly_gguf/pdf_data/"
-
-# SIJAINTI = "H:/tekoaly/"
-# MODAL_SIJAINTI = "H:/tekoaly/Embedding/"
-# MODALMALLI = f"{MODAL_SIJAINTI}nomic-embed-text-v1.5.Q8_0.gguf"  # Embedding model
-# GGUFMALLI = f"{SIJAINTI}gemma3-4b-it-abliterated.Q4_K_M.gguf"     # Main generation model
-
-##########
-#LINUX:
-##########
-
-PDF_SIJAINTI = "/media/hdd4tb/Dokumentit/Satunnainen/kuulokkeet"
-EMBEDTALLENNUS = "./embeddings/"
-# /media/hdd2tb/Tekoaly/GGUFlmstudio/second-state/Qwen3-4B-GGUF/Qwen3-4B-Q4_K_M.gguf
-# /media/hdd2tb/Tekoaly/GGUF/gemma3-4b-it-abliterated.Q4_K_M.gguf
-# /media/hdd2tb/Tekoaly/GGUFlmstudio/mradermacher/gemma3-4b-it-abliterated-GGUF/gemma3-4b-it-abliterated.Q4_K_M.gguf
-SIJAINTI = "/media/hdd2tb/Tekoaly/GGUFlmstudio/mradermacher/gemma3-4b-it-abliterated-GGUF/"
-MODAL_SIJAINTI = "/media/hdd2tb/Tekoaly/Embedding/"
-MODALMALLI = f"{MODAL_SIJAINTI}nomic-embed-text-v2-moe.Q8_0.gguf"  # Embedding model
-GGUFMALLI = f"{SIJAINTI}gemma3-4b-it-abliterated.Q4_K_M.gguf"     # Main generation model
-
-# SIJAINTI = "H:/tekoaly/"
-# MODAL_SIJAINTI = "H:/tekoaly/Embedding/"
-# MODALMALLI = f"{MODAL_SIJAINTI}nomic-embed-text-v1.5.Q8_0.gguf"  # Embedding model
-# GGUFMALLI = f"{SIJAINTI}gemma3-4b-it-abliterated.Q4_K_M.gguf"     # Main generation model
+match (int(FILE_LOCATION)):
+    case 1:
+        # PC:
+        PDF_SIJAINTI =  "G:/Dokumentit/Satunnainen/kuulokkeet/"
+        EMBEDTALLENNUS = "./embeddings/"
+        SIJAINTI = "F:/Tekoaly/GGUF/"
+        MODAL_SIJAINTI = "F:/Tekoaly/Embedding/"
+        MODALMALLI = f"{MODAL_SIJAINTI}nomic-embed-text-v2-moe.Q8_0.gguf"  # Embedding model
+        GGUFMALLI = f"{SIJAINTI}gemma3-4b-it-abliterated.Q4_K_M.gguf"     # Main generation model
+    case 2:
+        # LINUX:
+        # /media/hdd2tb/Tekoaly/GGUFlmstudio/second-state/Qwen3-4B-GGUF/Qwen3-4B-Q4_K_M.gguf
+        # /media/hdd2tb/Tekoaly/GGUF/gemma3-4b-it-abliterated.Q4_K_M.gguf
+        # /media/hdd2tb/Tekoaly/GGUFlmstudio/mradermacher/gemma3-4b-it-abliterated-GGUF/gemma3-4b-it-abliterated.Q4_K_M.gguf
+        PDF_SIJAINTI = "/media/hdd4tb/Dokumentit/Satunnainen/kuulokkeet/"
+        EMBEDTALLENNUS = "./embeddings/"
+        SIJAINTI = "/media/hdd2tb/Tekoaly/GGUFlmstudio/mradermacher/gemma3-4b-it-abliterated-GGUF/"
+        MODAL_SIJAINTI = "/media/hdd2tb/Tekoaly/Embedding/"
+        MODALMALLI = f"{MODAL_SIJAINTI}nomic-embed-text-v2-moe.Q8_0.gguf"  # Embedding model
+        GGUFMALLI = f"{SIJAINTI}gemma3-4b-it-abliterated.Q4_K_M.gguf"
+    case 3:
+        # Laptop:
+        # C:\Users\Saku-Laptop\.lmstudio\models\
+        EMBEDTALLENNUS = "./embeddings/"
+        SIJAINTI = "C:/Users/Saku-Laptop/.lmstudio/models/bartowski/mlabonne_gemma-3-4b-it-abliterated-GGUF/"
+        MODAL_SIJAINTI = "C:/Users/Saku-Laptop/.lmstudio/models/nomic-ai/nomic-embed-text-v2-moe-GGUF/"
+        MODALMALLI = f"{MODAL_SIJAINTI}nomic-embed-text-v2-moe.Q8_0.gguf"  # Embedding model
+        GGUFMALLI = f"{SIJAINTI}mlabonne_gemma-3-4b-it-abliterated-IQ3_M.gguf"
+        
+    case _:
+        print("invalid file location.")   
+# end match
 
 # Dolphin3.0-Llama3.2-3B-Q4_K_M.gguf
 # Phi-4-mini-instruct-Q4_K_M.gguf
