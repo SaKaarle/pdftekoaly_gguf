@@ -75,7 +75,7 @@ import faiss
 
 # Gemma3 4B it abliterated Q4_K_M + Nomic Embed Text V2 = 4387 MB
 
-FILE_LOCATION = 1
+FILE_LOCATION = 4
 # 1: PC, 2: LINUX, 3: Laptop
 
 match (int(FILE_LOCATION)):
@@ -101,12 +101,22 @@ match (int(FILE_LOCATION)):
     case 3:
         # Laptop:
         # C:\Users\Saku-Laptop\.lmstudio\models\
+        PDF_SIJAINTI = "C:/Users/Saku-Laptop/Documents/PDF/"
         EMBEDTALLENNUS = "./embeddings/"
         SIJAINTI = "C:/Users/Saku-Laptop/.lmstudio/models/bartowski/mlabonne_gemma-3-4b-it-abliterated-GGUF/"
         MODAL_SIJAINTI = "C:/Users/Saku-Laptop/.lmstudio/models/nomic-ai/nomic-embed-text-v2-moe-GGUF/"
         MODALMALLI = f"{MODAL_SIJAINTI}nomic-embed-text-v2-moe.Q8_0.gguf"  # Embedding model
         GGUFMALLI = f"{SIJAINTI}mlabonne_gemma-3-4b-it-abliterated-IQ3_M.gguf"
         
+    case 4:
+        # Linux Laptop:
+        # C:\Users\Saku-Laptop\.lmstudio\models\
+        PDF_SIJAINTI = "/media/winos/Users/Saku-Laptop/Documents/PDF/"
+        EMBEDTALLENNUS = "./embeddings/"
+        SIJAINTI = "/media/winos/Users/Saku-Laptop/.lmstudio/models/bartowski/mlabonne_gemma-3-4b-it-abliterated-GGUF/"
+        MODAL_SIJAINTI = "/media/winos/Users/Saku-Laptop/.lmstudio/models/nomic-ai/nomic-embed-text-v2-moe-GGUF/"
+        MODALMALLI = f"{MODAL_SIJAINTI}nomic-embed-text-v2-moe.Q8_0.gguf"  # Embedding model
+        GGUFMALLI = f"{SIJAINTI}mlabonne_gemma-3-4b-it-abliterated-IQ3_M.gguf"
     case _:
         print(f"[ERROR]: Invalid file location. Check 'FILE_LOCATION' value. Value is: {FILE_LOCATION} \n")   
 # end match
