@@ -136,7 +136,7 @@ match (int(FILE_LOCATION)):
 # MUUTTUVAT:
 # esimerkiksi
 
-CHUNK_SIZE = 600
+CHUNK_SIZE = 420
 OVERLAP = 150
 
 # TOKENien määrä jota vaihtaa
