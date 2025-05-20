@@ -77,7 +77,7 @@ import faiss
 # Gemma3 4B it abliterated Q4_K_M + Nomic Embed Text V2 = 4387 MB
 
 FILE_LOCATION = 1
-# 1: PC, 2: LINUX, 3: Laptop
+# 1: PC, 2: LINUX, 3: Laptop 4: Linux Laptop
 
 match (int(FILE_LOCATION)):
     case 1:
