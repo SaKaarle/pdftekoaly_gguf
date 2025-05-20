@@ -13,12 +13,14 @@ GGUF mallit:
   
 - [gemma3-4b-it-abliterated.Q4_K_M.gguf](https://huggingface.co/mlabonne/gemma-3-4b-it-abliterated-GGUF)
 - [Dolphin3.0-Llama3.2-3B-Q4_K_M.gguf](https://huggingface.co/bartowski/Dolphin3.0-Llama3.2-3B-GGUF)
+- [Reasoning / Thinking malli: Qwen3-1.7B-abliterated-iq4_nl.gguf](https://huggingface.co/Mungert/Qwen3-1.7B-abliterated-GGUF)
   
 Embedding mallit:
   
 - [all-MiniLM-L6-v2](https://huggingface.co/leliuga/all-MiniLM-L6-v2-GGUF)
 - [nomic-embed-text-v1.5.Q8_0.gguf](https://huggingface.co/nomic-ai/nomic-embed-text-v1.5-GGUF)
 - [nomic-embed-text-v1.5.Q4_K_M.gguf](https://huggingface.co/nomic-ai/nomic-embed-text-v1.5-GGUF)
+- [nomic-embed-text-v2-moe.Q8_0.gguf](https://huggingface.co/nomic-ai/nomic-embed-text-v2-moe-GGUF)
   
   
 ### Testattu:
@@ -26,12 +28,20 @@ Embedding mallit:
 - Python 3.11.11
 - llama-cpp-python versiot: 0.3.6 - 0.3.9
 - nvcc versio: 12.8
-- NumPy versio: 1.25.* AMD / Vulkan API
-- NumPy versio: 2.2.4 NVidia / AMD toimii?
+- NumPy versio: 2.2.5
+- Vulkan 1.4x?
   
 Seuraavassa prosessissa testataan kuinka voitaisiin eka prosessoida pdfplumberilla PDF tiedostot, etsiä point-of-intrest ja myös mahdollisesti testata OpenCV:tä tai muita OCR (kuvantunnistus) sovelluksia.
   
 ## Huomioitavaa asennuksessa:
+
+### CMAKE
+  
+Täytyy olla asennettuna, että pystytään Llama-cpp-python. [CPP compiler](https://visualstudio.microsoft.com/vs/features/cplusplus/) ja [visuaaliset ohjeet](https://code.visualstudio.com/docs/cpp/config-msvc#_prerequisites) Compilerin asennukselle.
+  
+### Vulkan / CUDA
+  
+Viimeisimmät näytönohjain ajurit täytyy olla asennettuna. Cuda-toolkit täytyy ladata erikseen Nvidian omilta sivuilta: https://developer.nvidia.com/cuda-downloads 
   
 ### Conda /miniconda/ anaconda asetuksia ja säätöjä:
   
@@ -40,11 +50,14 @@ Muista PATH / Enviroment Variables...
 Powershell: Poistamalla rajoitteita `set-executionpolicy remotesigned` että pystytään avaamaan PowerShellillä/Visual Studio Codella
 esim. `conda activate gguf` automaattisesti. Pystytään helpommin hallitsemaan VENVejä ilman, että tarvitsee vaihdella CMD ja
 PS välillä. Myös helpompi laittaa `$env: ...` komentoja ja asentaa Vulkan tai Cuda versio Llama.cpp.pythonista.
-
+  
 `conda config --set auto_activate_base false` ottaa pois automaattisen aktivoinnin kun avataan esim Powershell tietokoneella.
   
-### Numpy version asennus: 
-`pip install numpy==1.25.*` tai `pip install numpy==2.2.4` tai `pip install numpy`
+### Python UV venv
+  
+Yksinkertainen asentaa noudattaen Astral-sh uv [GitHub repositoryä](https://github.com/astral-sh/uv/).
+  
+`CMAKE_ARGS="-DGGML_VULKAN=on" uv pip install llama-cpp-python==0.3.9 --verbose --reinstall --no-cache-dir`
   
 ### Windows Powershell terminaaliin:
   
@@ -52,11 +65,11 @@ Aktivoi venv `conda activate tekoalyllama` korvaamalla `tekoalyllama` omalla vir
   
 AMD tai Intel tai muu GPU: `$env:CMAKE_ARGS="-DGGML_VULKAN=on"` Windowsilla aktivoidaan Vulkan ajurien asentaminen.
   
-Nvidia GPU: Asennettuna Cuda Toolkit: https://developer.nvidia.com/cuda-downloads ja sen jälkeen: `$env:CMAKE_ARGS="-DGGML_CUDA=on"`
-
+Nvidia GPU: Täytyy olla asennettuna Cuda Toolkit: https://developer.nvidia.com/cuda-downloads ja sen jälkeen: `$env:CMAKE_ARGS="-DGGML_CUDA=on"`
+  
 ### Llama-cpp-pythonin asennus:
-
-`pip install llama-cpp-python --no-cache-dir --verbose` Tarvittaessa käytä `--force` jos pitää overwritettää edellinen asennus.
+  
+Antamalla halutun arvon `$env:CMAKE_ARGS=` kohtaan, voidaan asentaa llama-cpp-python: `pip install llama-cpp-python --no-cache-dir --verbose` Tarvittaessa käytä `--force` jos pitää overwritettää edellinen asennus.
   
   
 ## Mitä muutettavaa?
@@ -75,14 +88,17 @@ context = "\n---\n".join(chunk["chunk"] for chunk in relevant_chunks)
   
 - Muutettava promptia ja testata erillaisia promptaus kikkoja datan laadun varmistamiseen.
 - Tokenien määrä on suuri jopa yhdellä PDF:llä. Dynaaminen CHUNK ja OVERLAP arvot?
-
+  
 ## Mitä lisättävää?
   
 ### Chatting
+  
+Hoidettu: 👍
+  
 - Koodi `pdf_file_process_gguf_v4.py` tarvitsee "chättäys" lisäyksen, että voidaan testata embedding toimivuutta. 
 - Uusin v6 versio on chatting ominaisuus ja kysyy, käytetäänkö jo valmiiksi prosessoituja PDF -tiedostoja.
 - Testataan muita vektorien vertailu metodeja. Esim [FAISS vs Cosine_similarity](https://myscale.com/blog/faiss-cosine-similarity-enhances-search-efficiency/) 
-
+  
 ### Vektori kartta
   
 Mahdollisesti parantaa vektorikarttaa, riippuen kuinka monta tiedostoa tai kuinka suuria tiedostomääriä käsitellään.

@@ -18,9 +18,6 @@ PS välillä. Myös helpompi laittaa `$env: ...` komentoja ja asentaa Vulkan tai
 
 `conda config --set auto_activate_base false` ottaa pois automaattisen aktivoinnin kun avataan esim Powershell tietokoneella.
   
-Numy versio FYI: 
-`pip install numpy==1.25.*`
-  
 Windows Powershell terminaaliin:
 p  
 `conda activate tekoalyllama` tai oma virtualenv
@@ -48,12 +45,13 @@ CPU: ´$env:CMAKE_ARGS="-DGGML_BLAS=ON -DGGML_BLAS_VENDOR=OpenBLAS"´ tai pelkä
   
 `pip show llama-cpp-python`: Testattu ja toimii versiolla 0.3.9
 
-uv venv: `CMAKE_ARGS="-DGGML_VULKAN=on" uv pip install llama-cpp-python==0.3.9 --verbose --reinstall --no-cache-dir --verbose` 
+uv venv: `CMAKE_ARGS="-DGGML_VULKAN=on" uv pip install llama-cpp-python==0.3.9 --verbose --reinstall --no-cache-dir` 
 ```
 DEBUG uv 0.7.4
 DEBUG Searching for default Python interpreter in virtual environments
 DEBUG Found `cpython-3.13.3-linux-x86_64-gnu` at `/home/saku/VSC/pdftekoaly_gguf/pdftekoaly_gguf/.venv/bin/python3` 
-```   
+```
+  
 
 '''
 
@@ -75,7 +73,7 @@ import faiss
 
 # Gemma3 4B it abliterated Q4_K_M + Nomic Embed Text V2 = 4387 MB
 
-FILE_LOCATION = 4
+FILE_LOCATION = 1
 # 1: PC, 2: LINUX, 3: Laptop
 
 match (int(FILE_LOCATION)):
@@ -86,7 +84,7 @@ match (int(FILE_LOCATION)):
         SIJAINTI = "F:/Tekoaly/GGUF/"
         MODAL_SIJAINTI = "F:/Tekoaly/Embedding/"
         MODALMALLI = f"{MODAL_SIJAINTI}nomic-embed-text-v2-moe.Q8_0.gguf"  # Embedding model
-        GGUFMALLI = f"{SIJAINTI}gemma3-4b-it-abliterated.Q4_K_M.gguf"     # Main generation model
+        GGUFMALLI = f"{SIJAINTI}Qwen3-1.7B-abliterated-iq4_nl.gguf"     # Main generation model
     case 2:
         # LINUX:
         # /media/hdd2tb/Tekoaly/GGUFlmstudio/second-state/Qwen3-4B-GGUF/Qwen3-4B-Q4_K_M.gguf
@@ -122,29 +120,26 @@ match (int(FILE_LOCATION)):
 # end match
 
 # Dolphin3.0-Llama3.2-3B-Q4_K_M.gguf
-# Phi-4-mini-instruct-Q4_K_M.gguf
-# Phi-3.5-mini-instruct_Uncensored-Q4_K_M.gguf
 # gemma3-4b-it-abliterated.Q4_K_M.gguf
 # gemma-3-1b-it-Q4_K_M.gguf
 # Qwen_Qwen3-1.7B-IQ4_NL.gguf
+# Qwen3-1.7B-Q8_0.gguf
+# Qwen3-1.7B-abliterated-iq4_nl.gguf
 
 # nomic-embed-text-v1.5.Q8_0.gguf
 # nomic-embed-text-v1.5.Q4_K_M.gguf
 # all-MiniLM-L6-v2.Q4_K_M.gguf
 # nomic-embed-text-v2-moe.Q8_0.gguf
 
-# MUUTTUVAT:
+# MUUTTUJAT:
 # esimerkiksi
-
 CHUNK_SIZE = 350
 OVERLAP = 150
-
 # TOKENien määrä jota vaihtaa
 # 32768 16384 8192 4096 2048 depends of the chunked and overlapped size and numbers.
 MODALMAXTOKEN = 512 # 2048 tai 512
 MAXVIESTITOKEN = 8192 # Riippuu paljon RAG tokeneita se ottaa vastaan.
 VASTAUSTOKEN = 1024 #vastauksen pituus määrittyy tällä.
-
 
 # FUNKTIOT:
 
