@@ -53,6 +53,9 @@ DEBUG Found `cpython-3.13.3-linux-x86_64-gnu` at `/home/saku/VSC/pdftekoaly_gguf
 ```
   
 
+Esimerkki kysymykset:  Give me table information of Lattatangot and list them all here in "|"
+
+
 '''
 
 import os
@@ -99,12 +102,14 @@ match (int(FILE_LOCATION)):
     case 3:
         # Laptop:
         # C:\Users\Saku-Laptop\.lmstudio\models\
+        # C:/Users/Saku-Laptop/.lmstudio/models/Mungert/Qwen3-1.7B-abliterated-GGUF/ Qwen3-1.7B-abliterated-iq4_nl.gguf
+        # C:/Users/Saku-Laptop/.lmstudio/models/bartowski/mlabonne_gemma-3-4b-it-abliterated-GGUF/mlabonne_gemma-3-4b-it-abliterated-IQ3_M.gguf
         PDF_SIJAINTI = "C:/Users/Saku-Laptop/Documents/PDF/"
         EMBEDTALLENNUS = "./embeddings/"
-        SIJAINTI = "C:/Users/Saku-Laptop/.lmstudio/models/bartowski/mlabonne_gemma-3-4b-it-abliterated-GGUF/"
+        SIJAINTI = "C:/Users/Saku-Laptop/.lmstudio/models/Mungert/Qwen3-1.7B-abliterated-GGUF/"
         MODAL_SIJAINTI = "C:/Users/Saku-Laptop/.lmstudio/models/nomic-ai/nomic-embed-text-v2-moe-GGUF/"
         MODALMALLI = f"{MODAL_SIJAINTI}nomic-embed-text-v2-moe.Q8_0.gguf"  # Embedding model
-        GGUFMALLI = f"{SIJAINTI}mlabonne_gemma-3-4b-it-abliterated-IQ3_M.gguf"
+        GGUFMALLI = f"{SIJAINTI}Qwen3-1.7B-abliterated-iq4_nl.gguf"
         
     case 4:
         # Linux Laptop:
@@ -133,13 +138,13 @@ match (int(FILE_LOCATION)):
 
 # MUUTTUJAT:
 # esimerkiksi
-CHUNK_SIZE = 350
+CHUNK_SIZE = 500
 OVERLAP = 150
 # TOKENien määrä jota vaihtaa
 # 32768 16384 8192 4096 2048 depends of the chunked and overlapped size and numbers.
 MODALMAXTOKEN = 512 # 2048 tai 512
 MAXVIESTITOKEN = 8192 # Riippuu paljon RAG tokeneita se ottaa vastaan.
-VASTAUSTOKEN = 1024 #vastauksen pituus määrittyy tällä.
+VASTAUSTOKEN = 2048 #vastauksen pituus määrittyy tällä.
 
 # FUNKTIOT:
 
