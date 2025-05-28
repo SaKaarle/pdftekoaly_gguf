@@ -78,13 +78,13 @@ FILE_LOCATION = 1
 
 match (int(FILE_LOCATION)):
     case 1:
-        # PC:
-        PDF_SIJAINTI =  "G:/Dokumentit/Satunnainen/kuulokkeet/"
+        # PC: # G:/RAGtekoaly/   G:/Dokumentit/Satunnainen/kuulokkeet/
+        PDF_SIJAINTI =  "G:/RAGtekoaly/"
         EMBEDTALLENNUS = "./embeddings/"
         SIJAINTI = "F:/Tekoaly/GGUF/"
         MODAL_SIJAINTI = "F:/Tekoaly/Embedding/"
         MODALMALLI = f"{MODAL_SIJAINTI}nomic-embed-text-v2-moe.Q8_0.gguf"  # Embedding model
-        GGUFMALLI = f"{SIJAINTI}Qwen3-1.7B-abliterated-iq4_nl.gguf"     # Main generation model
+        GGUFMALLI = f"{SIJAINTI}Qwen3-1.7B-abliterated-iq4_nl.gguf" # Main generation model
     case 2:
         # LINUX:
         # /media/hdd2tb/Tekoaly/GGUFlmstudio/second-state/Qwen3-4B-GGUF/Qwen3-4B-Q4_K_M.gguf
@@ -133,13 +133,13 @@ match (int(FILE_LOCATION)):
 
 # MUUTTUJAT:
 # esimerkiksi
-CHUNK_SIZE = 350
-OVERLAP = 150
+CHUNK_SIZE = 512
+OVERLAP = 128
 # TOKENien määrä jota vaihtaa
 # 32768 16384 8192 4096 2048 depends of the chunked and overlapped size and numbers.
 MODALMAXTOKEN = 512 # 2048 tai 512
 MAXVIESTITOKEN = 8192 # Riippuu paljon RAG tokeneita se ottaa vastaan.
-VASTAUSTOKEN = 1024 #vastauksen pituus määrittyy tällä.
+VASTAUSTOKEN = 4096 #vastauksen pituus määrittyy tällä.
 
 # FUNKTIOT:
 
