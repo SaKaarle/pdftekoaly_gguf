@@ -53,6 +53,15 @@ DEBUG Found `cpython-3.13.3-linux-x86_64-gnu` at `/home/saku/VSC/pdftekoaly_gguf
 ```
   
 
+Esimerkki kysymykset:  Give me table information of Lattatangot and list them all here in "|"
+
+
+Dataesimerkkejä: 
+- Source: https://stat.fi/tup/avoin-data/pxweb.html
+- File: https://stat.fi/media/uploads/org/avoindata/pxweb_api-ohje.pdf
+
+- Source: https://www.opendata.fi/data/en_GB/dataset/?q%3D%26sort%3Dsource%2Basc%26collection_type%3DInteroperability%2BTools%26res_format%3Dhtm=&_res_format_limit=0&_vocab_keywords_fi_limit=0&_groups_limit=0&_vocab_keywords_sv_limit=0&_license_id_limit=0&res_format=pdf&_organization_limit=0&collection_type=Open+Data
+
 '''
 
 import os
@@ -74,7 +83,7 @@ import faiss
 # Gemma3 4B it abliterated Q4_K_M + Nomic Embed Text V2 = 4387 MB
 
 FILE_LOCATION = 1
-# 1: PC, 2: LINUX, 3: Laptop
+# 1: PC, 2: LINUX, 3: Laptop 4: Linux Laptop
 
 match (int(FILE_LOCATION)):
     case 1:
@@ -99,12 +108,14 @@ match (int(FILE_LOCATION)):
     case 3:
         # Laptop:
         # C:\Users\Saku-Laptop\.lmstudio\models\
+        # C:/Users/Saku-Laptop/.lmstudio/models/Mungert/Qwen3-1.7B-abliterated-GGUF/ Qwen3-1.7B-abliterated-iq4_nl.gguf
+        # C:/Users/Saku-Laptop/.lmstudio/models/bartowski/mlabonne_gemma-3-4b-it-abliterated-GGUF/mlabonne_gemma-3-4b-it-abliterated-IQ3_M.gguf
         PDF_SIJAINTI = "C:/Users/Saku-Laptop/Documents/PDF/"
         EMBEDTALLENNUS = "./embeddings/"
-        SIJAINTI = "C:/Users/Saku-Laptop/.lmstudio/models/bartowski/mlabonne_gemma-3-4b-it-abliterated-GGUF/"
+        SIJAINTI = "C:/Users/Saku-Laptop/.lmstudio/models/Mungert/Qwen3-1.7B-abliterated-GGUF/"
         MODAL_SIJAINTI = "C:/Users/Saku-Laptop/.lmstudio/models/nomic-ai/nomic-embed-text-v2-moe-GGUF/"
         MODALMALLI = f"{MODAL_SIJAINTI}nomic-embed-text-v2-moe.Q8_0.gguf"  # Embedding model
-        GGUFMALLI = f"{SIJAINTI}mlabonne_gemma-3-4b-it-abliterated-IQ3_M.gguf"
+        GGUFMALLI = f"{SIJAINTI}Qwen3-1.7B-abliterated-iq4_nl.gguf"
         
     case 4:
         # Linux Laptop:
@@ -139,7 +150,7 @@ OVERLAP = 128
 # 32768 16384 8192 4096 2048 depends of the chunked and overlapped size and numbers.
 MODALMAXTOKEN = 512 # 2048 tai 512
 MAXVIESTITOKEN = 8192 # Riippuu paljon RAG tokeneita se ottaa vastaan.
-VASTAUSTOKEN = 4096 #vastauksen pituus määrittyy tällä.
+VASTAUSTOKEN = 2048 #vastauksen pituus määrittyy tällä.
 
 # FUNKTIOT:
 
@@ -178,7 +189,8 @@ async def main():
         print(f"[INFO] Loaded {len(all_embeddings)} embeddings from NPY files.")
         # Check if there are any embeddings loaded
         if all_embeddings:
-            print(f"[DEBUG] First embedding: {all_embeddings[0]}")
+            print(f"[DEBUG] First embedding: {all_embeddings[0]['embedding'][:10]}...")
+            print(f"[DEBUG] First chunk: {all_embeddings[0]['chunk'][:50]}...")
     else:
         start_time = time.time()
         all_embeddings = await process_all_pdfs_multithreaded(PDF_SIJAINTI, embed_model)

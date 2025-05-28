@@ -91,6 +91,14 @@ context = "\n---\n".join(chunk["chunk"] for chunk in relevant_chunks)
   
 ## Mitä lisättävää?
   
+|Ominaisuus|Hoidettu|
+|--------|--------|
+|Chatting|Hoidettu. Ei muista viimeistä viestiä|
+|Kuvanäkö|Kesken. Ei aloitettu.|
+|Vektori|Hoidettu.|
+|jotain uutta ja kivaa|Ei keksitty eikä aloitettu|
+
+
 ### Chatting
   
 Hoidettu: 👍
@@ -100,6 +108,8 @@ Hoidettu: 👍
 - Testataan muita vektorien vertailu metodeja. Esim [FAISS vs Cosine_similarity](https://myscale.com/blog/faiss-cosine-similarity-enhances-search-efficiency/) 
   
 ### Vektori kartta
+  
+Hoidettu: 👍
   
 Mahdollisesti parantaa vektorikarttaa, riippuen kuinka monta tiedostoa tai kuinka suuria tiedostomääriä käsitellään.
   
