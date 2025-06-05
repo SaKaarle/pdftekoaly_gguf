@@ -23,8 +23,10 @@ p
 `conda activate tekoalyllama` tai oma virtualenv
   
 AMD tai Intel tai muu GPU: `$env:CMAKE_ARGS="-DGGML_VULKAN=on"` Windowsilla aktivoidaan Vulkan ajurien asentaminen
+Tai jos ei ole niin: https://sdk.lunarg.com/sdk/download/1.4.309.0/windows/VulkanSDK-1.4.309.0-Installer.exe 
   
 Nvidia GPU: Asennettuna Cuda Toolkit: https://developer.nvidia.com/cuda-downloads ja sen jälkeen: `$env:CMAKE_ARGS="-DGGML_CUDA=on"`
+
 
 ```
 PS C:\\Users\\Saku-Laptop> nvcc -V
@@ -62,6 +64,10 @@ Dataesimerkkejä:
 
 - Source: https://www.opendata.fi/data/en_GB/dataset/?q%3D%26sort%3Dsource%2Basc%26collection_type%3DInteroperability%2BTools%26res_format%3Dhtm=&_res_format_limit=0&_vocab_keywords_fi_limit=0&_groups_limit=0&_vocab_keywords_sv_limit=0&_license_id_limit=0&res_format=pdf&_organization_limit=0&collection_type=Open+Data
 
+uv pip install pdfplumber
+uv pip install tqdm
+uv pip install aiofiles
+uv pip install faiss-cpu
 '''
 #test
 
@@ -77,21 +83,22 @@ import time
 import asyncio
 import aiofiles
 from concurrent.futures import ThreadPoolExecutor
-import faiss
 
+import faiss
+#os.environ["PYTHONUTF8"] = "1"
 # KANSIOT JA SIJAINNIT:
 
 # Gemma3 4B it abliterated Q4_K_M + Nomic Embed Text V2 = 4387 MB
 
-FILE_LOCATION = 2
+FILE_LOCATION = 1
 # 1: PC, 2: LINUX, 3: Laptop 4: Linux Laptop
 
 match (int(FILE_LOCATION)):
     case 1:
         # PC: # G:/RAGtekoaly/   G:/Dokumentit/Satunnainen/kuulokkeet/
-        PDF_SIJAINTI =  "G:/RAGtekoaly/"
+        PDF_SIJAINTI =  "F:/RAGtekoaly/"
         EMBEDTALLENNUS = "./embeddings/"
-        SIJAINTI = "F:/Tekoaly/GGUF/"
+        SIJAINTI = "F:/Tekoaly/GGUFlmstudio/"
         MODAL_SIJAINTI = "F:/Tekoaly/Embedding/"
         MODALMALLI = f"{MODAL_SIJAINTI}nomic-embed-text-v2-moe.Q8_0.gguf"  # Embedding model
         GGUFMALLI = f"{SIJAINTI}Qwen3-1.7B-abliterated-iq4_nl.gguf" # Main generation model
@@ -145,8 +152,8 @@ match (int(FILE_LOCATION)):
 
 # MUUTTUJAT:
 # esimerkiksi
-CHUNK_SIZE = 512
-OVERLAP = 128
+CHUNK_SIZE = 650
+OVERLAP = 300
 # TOKENien määrä jota vaihtaa
 # 32768 16384 8192 4096 2048 depends of the chunked and overlapped size and numbers.
 MODALMAXTOKEN = 512 # 2048 tai 512
@@ -400,12 +407,14 @@ def save_embeddings_to_npy(embeddings, file_path, embed_directory):
     Save embeddings to a .npy file.
     """
     try:
-        full_file_path = os.path.join(embed_directory,file_path)
-        with open(full_file_path, "wb") as embed_f:
-            np.save(embed_f, embeddings)
-            print(f"[INFO] Saved embeddings to {embed_f}")
+        full_file_path = os.path.join(embed_directory, file_path)
+        # Ensure the directory exists
+        os.makedirs(embed_directory, exist_ok=True)
+        # Use numpy's save function which handles binary data and doesn't require text encoding
+        np.save(full_file_path, embeddings)
+        print(f"[INFO] Saved embeddings to {full_file_path}")
     except Exception as e:
-        print(f"[ERROR] Could not save embeddings to {embed_f}: {e}")
+        print(f"[ERROR] Could not save embeddings to {full_file_path}: {e}")
 
 ################### SAVE TO EMBEDDING VECTORMAP TO TXT ###################
 
