@@ -69,11 +69,12 @@ Lista vaadittavista laitteista:
 
 ## Vaadittavat asennukset Windows sekä Linux -tietokoneelle
 Lista sovelluksista:
+  
 - Python 3.9 - 3.13
 - Visual Studio Code
 - Miniconda (venv)
 - Uv (venv)
-- CMAKE
+- [CMAKE](https://visualstudio.microsoft.com/vs/features/cplusplus/)
 - Git
 - AMD / Intel GPU: [Vulkan SDK ](https://vulkan.lunarg.com/sdk/home)
 - Nvidia GPU: [Cuda Toolkit](https://developer.nvidia.com/cuda-downloads)
@@ -81,11 +82,12 @@ Lista sovelluksista:
   
 ## Pip paketit
   
+Asennettavat PIP paketit:
 `pip install pdfplumber faiss-cpu aiofiles tqdm`
-
+  
 ## Tekoälymallit
-
-GGUF mallit:
+  
+Ladattavat ja testattu toimiviksi olevat GGUF mallit:
   
 - [gemma3-4b-it-abliterated.Q4_K_M.gguf](https://huggingface.co/mlabonne/gemma-3-4b-it-abliterated-GGUF)
 - [Dolphin3.0-Llama3.2-3B-Q4_K_M.gguf](https://huggingface.co/bartowski/Dolphin3.0-Llama3.2-3B-GGUF)
@@ -97,7 +99,8 @@ Embedding mallit:
 - [nomic-embed-text-v1.5.Q8_0.gguf](https://huggingface.co/nomic-ai/nomic-embed-text-v1.5-GGUF)
 - [nomic-embed-text-v1.5.Q4_K_M.gguf](https://huggingface.co/nomic-ai/nomic-embed-text-v1.5-GGUF)
 - [nomic-embed-text-v2-moe.Q8_0.gguf](https://huggingface.co/nomic-ai/nomic-embed-text-v2-moe-GGUF)
-
+  
+Muitakin GGUF malleja pystytään lataamaan ja kokeilemaan, mutta niiden toimivuus voi vaihdella. Aivan uudet mallit saattavat vaatia Llama-cpp-python:in päivitystä.
 
 ## Conda /miniconda/ anaconda asetuksia ja säätöjä:
   
@@ -124,6 +127,7 @@ AMD tai Intel tai muu GPU: `$env:CMAKE_ARGS="-DGGML_VULKAN=on"` Windowsilla akti
 Nvidia GPU: Täytyy olla asennettuna Cuda Toolkit: https://developer.nvidia.com/cuda-downloads ja sen jälkeen: `$env:CMAKE_ARGS="-DGGML_CUDA=on"`
   
 ## Llama-cpp-python asennus
+  
 CMAKE täytyy olla asennettuna, että pystytään asentamaan Llama-cpp-python tietokoneelle. [CMAKE CPP compiler](https://visualstudio.microsoft.com/vs/features/cplusplus/) ja [visuaaliset ohjeet](https://code.visualstudio.com/docs/cpp/config-msvc#_prerequisites) Compilerin asennukselle.
 
 Linux tietokoneilla täytyy varmistaa, että CMAKE on asennettu kirjoittamalla `cmake --version` terminaaliin. 
@@ -138,6 +142,7 @@ CPU: `$env:CMAKE_ARGS="-DGGML_BLAS=ON -DGGML_BLAS_VENDOR=OpenBLAS"` tai pelkäst
 Kun on komento syötetty Powershelliin, voidaan aloittaa llama-cpp-pythonin asennus. `pip install llama-cpp-python --verbose`. Jos pitää asentaa uudelleen, lisää komento ` --force --no-cache-dir`.
   
 # Tulokset
+  
 Tulossa pian...
   
 # Lisenssi
@@ -145,5 +150,5 @@ Dokumentit lisensoitu:
 - [![License: MIT](https://img.shields.io/badge/Licence-MIT-brightgreen.svg)](https://opensource.org/license/MIT)
   
 # Tekijät
-
+  
 Saku Kaarlejärvi
